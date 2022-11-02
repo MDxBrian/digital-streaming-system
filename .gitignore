@@ -1,5 +1,18 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+# server
+.vscode
+.dockerignore
+.eslintignore
+.gitignore
+.eslintrc.js
+.mocharc.json
+.prettierignore
+.prettierrc
+.yo-rc.json
+package-lock.json
+
+
 # dependencies
 /node_modules
 /.pnp
