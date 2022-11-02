@@ -1,0 +1,35 @@
+.site-layout {
+  background: #f0f2f5;
+}
+
+.title {
+  color: #ed1b2e;
+  font-weight: bold;
+  font-size: 20px;
+  margin-top: 2px !important;
+}
+
+.ant-layout-content .site-layout-background{
+  background: #ed1b2e;
+  background: #f0f2f5;
+}
+
+.ant-tabs-nav{
+  background: #f0f2f5;
+}
+
+.ant-tabs ant-tabs-top {
+  background: #f0f2f5;
+}
+
+#wrap {
+  float: left;
+  position: relative;
+  left: 50%;
+}
+
+#content {
+  float: left;
+  position: relative;
+  left: -50%;
+}
