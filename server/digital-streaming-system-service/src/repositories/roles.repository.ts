@@ -1,6 +1,6 @@
 import {inject} from '@loopback/core';
 import {DefaultCrudRepository} from '@loopback/repository';
-import {LocalhostDataSource} from '../datasources';
+import {DbDataSource} from '../datasources';
 import {Roles, RolesRelations} from '../models';
 
 export class RolesRepository extends DefaultCrudRepository<
@@ -9,7 +9,7 @@ export class RolesRepository extends DefaultCrudRepository<
   RolesRelations
 > {
   constructor(
-    @inject('datasources.localhost') dataSource: LocalhostDataSource,
+    @inject('datasources.db') dataSource: DbDataSource,
   ) {
     super(Roles, dataSource);
   }
