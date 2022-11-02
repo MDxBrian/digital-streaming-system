@@ -13,12 +13,6 @@ export class Users extends Entity {
     type: 'string',
     required: true,
   })
-  username: string;
-
-  @property({
-    type: 'string',
-    required: true,
-  })
   fullname: string;
 
   @property({
@@ -38,6 +32,13 @@ export class Users extends Entity {
     required: true,
   })
   password: string;
+
+  @property({
+    type: 'boolean',
+    required: true,
+  })
+  status: boolean;
+  
 
   // Define well-known properties here
 
