@@ -30,9 +30,7 @@ const HeaderController = () => {
                 transaction_state: subRole
             },
             success: (data) => {
-                console.log(data);
                 data.result.length > 0 ? setIssuanceHasPolicy(false) : setIssuanceHasPolicy(true); 
-                console.log(data);
             }
         })
     }
