@@ -1,20 +1,22 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import { Layout, Modal, Col, Row, Button, Form, Input, Checkbox } from "antd";
+import type { CheckboxChangeEvent } from "antd/es/checkbox";
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import Register from "./register";
 
 export interface IModalProps {
-  open: any
-  setOpen: any
+  open: any;
+  setOpen: any;
 }
+
+const api = require("../../utils/api");
 
 function Login({ open, setOpen }: IModalProps) {
   const [registerOpen, setRegisterOpen] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [modalText, setModalText] = useState("Content of the modal");
   const [loading, setLoading] = useState(false);
-
-
+  const [checked, setChecked] = useState(false);
   const showRegisterModal = () => {
     setRegisterOpen(true);
   };
@@ -38,20 +40,48 @@ function Login({ open, setOpen }: IModalProps) {
     setRegisterOpen(false);
   };
 
-  const onFinish = (values: any) => {
-    console.log("Success:", values);
+  const onFinish = async (data: any) => {
+    console.log("Success:", data);
+
+    const payload = {
+      email: data.email,
+      password: data.password,
+      remember: checked,
+    };
+
+    setLoading(true);
+    let res = await api.login(payload);
+    if (res) {
+      alert(`Successfully Login`);
+      setOpen(false);
+    }
+    return setLoading(false);
   };
 
   const onFinishFailed = (errorInfo: any) => {
     console.log("Failed:", errorInfo);
   };
+
+  const toggleChecked = () => {
+    setChecked(!checked);
+  };
+
+  
+  const onChange = (e: CheckboxChangeEvent) => {
+    setChecked(e.target.checked);
+  };
+
   return (
-    <div>   
-      {registerOpen && <Register registerOpen={registerOpen} setRegisterOpen={setRegisterOpen}/> }
+    <div>
+      {registerOpen && (
+        <Register
+          registerOpen={registerOpen}
+          setRegisterOpen={setRegisterOpen}
+        />
+      )}
       <Modal
         title="LOGIN"
         open={open}
-        onOk={handleOk}
         confirmLoading={confirmLoading}
         onCancel={handleCancel}
         footer={[
@@ -61,8 +91,7 @@ function Login({ open, setOpen }: IModalProps) {
           >
             Have no account yet?
             <Link onClick={showRegisterModal} to={""}>
-              {" "}
-              Register{" "}
+              &nbsp; Register
             </Link>
           </Form.Item>,
         ]}
@@ -71,18 +100,18 @@ function Login({ open, setOpen }: IModalProps) {
           name="basic"
           labelCol={{ span: 8 }}
           wrapperCol={{ span: 12 }}
-          initialValues={{ remember: true }}
           onFinish={onFinish}
           onFinishFailed={onFinishFailed}
           autoComplete="off"
         >
           <Form.Item
-            label="Username"
-            name="username"
+            label="Email"
+            name="email"
             rules={[
               {
                 required: true,
-                message: "Please input your username!",
+                type: "email",
+                message: "Email is required!",
               },
             ]}
           >
@@ -95,7 +124,7 @@ function Login({ open, setOpen }: IModalProps) {
             rules={[
               {
                 required: true,
-                message: "Please input your password!",
+                message: "Password is required!",
               },
             ]}
           >
@@ -106,8 +135,10 @@ function Login({ open, setOpen }: IModalProps) {
             name="remember"
             valuePropName="checked"
             wrapperCol={{ offset: 8, span: 12 }}
-          >
-            <Checkbox>Remember me</Checkbox>
+          > 
+          <Checkbox checked={checked} onChange={onChange}>
+              Remember me
+            </Checkbox>
             <Button type="primary" htmlType="submit" style={{ float: "right" }}>
               LOGIN
             </Button>

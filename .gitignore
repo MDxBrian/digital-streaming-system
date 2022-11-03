@@ -12,7 +12,6 @@
 .yo-rc.json
 package-lock.json
 
-
 # dependencies
 /node_modules
 /.pnp

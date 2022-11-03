@@ -7,6 +7,8 @@ export interface IModalProps {
   setRegisterOpen: any;
 }
 
+const api = require ("../../utils/api")
+
 function Register({ registerOpen, setRegisterOpen }: IModalProps) {
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [modalText, setModalText] = useState("Content of the modal");
@@ -35,9 +37,29 @@ function Register({ registerOpen, setRegisterOpen }: IModalProps) {
     setRegisterOpen(false);
   };
 
-  const onFinish = (values: any) => {
-    console.log("Success:", values);
+  const onFinish = async (data: any) => {
+    // setConfirmLoading(false);
+    if (data.password !== data.confirmPassword)
+      return alert("Password not match, please try again!");
+
+    const payload = {
+      email: data.email,
+      password: data.password,
+      fullname: data.fullname,
+      roleId: 2,
+      active: false,
+    };
+
+    setLoading(true);
+    let res = await api.registerUser(payload);
+    if (res) {
+      alert(`Registered Success! ${data.fullname}`)
+      setRegisterOpen(false)
+      setLoading(true);
+    }
+    return setLoading(false);
   };
+
 
   const onFinishFailed = (errorInfo: any) => {
     console.log("Failed:", errorInfo);
@@ -61,40 +83,28 @@ function Register({ registerOpen, setRegisterOpen }: IModalProps) {
         wrapperCol={{ span: 12 }}
         initialValues={{ remember: true }}
         onFinish={onFinish}
-        onFinishFailed={onFinishFailed}
         autoComplete="off"
       >
-        <Form.Item
-          label="Username"
-          name="username"
-          rules={[
-            {
-              required: true,
-              message: "Please input your username!",
-            },
-          ]}
-        >
-          <Input />
-        </Form.Item>
         <Form.Item
           label="Full Name"
           name="fullname"
           rules={[
             {
               required: true,
-              message: "Please input your Full name!",
-            },
+              message: "Fullname is required!"
+            }
           ]}
         >
           <Input />
         </Form.Item>
         <Form.Item
           label="Email"
-          name="fullname"
+          name="email"
           rules={[
             {
               required: true,
-              message: "Please input your Email!",
+              type: "email",
+              message: "Email is required!"
             },
           ]}
         >
@@ -107,7 +117,7 @@ function Register({ registerOpen, setRegisterOpen }: IModalProps) {
           rules={[
             {
               required: true,
-              message: "Please input your password!",
+              message: "Password is required!"
             },
           ]}
         >
@@ -120,15 +130,13 @@ function Register({ registerOpen, setRegisterOpen }: IModalProps) {
           rules={[
             {
               required: true,
-              message: "Please input your password!",
+              message: "Confirm password is required!"
             },
           ]}
         >
           <Input.Password />
         </Form.Item>
         <Form.Item
-          name="remember"
-          valuePropName="checked"
           wrapperCol={{ offset: 8, span: 12 }}
         >
           <Button type="primary" htmlType="submit">

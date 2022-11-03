@@ -93,7 +93,7 @@ const App: React.FC = () => {
                   paddingLeft: "20px",
                 }}
               >
-                <Row>DIGITAL STREAM SYSTEM</Row>
+                <Row>DIGITAL STREAMING SYSTEM</Row>
               </Col>
               <Col
                 span={12}
