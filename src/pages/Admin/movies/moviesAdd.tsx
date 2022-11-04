@@ -1,32 +1,85 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Form,
   Input,
-  AutoComplete,
+  Space,
   Card,
   Button,
   Typography,
   Row,
   Col,
   Image,
+  Select,
+  DatePicker,
+  InputNumber,
 } from "antd";
+import type { DatePickerProps, SelectProps } from "antd";
 import { Link } from "react-router-dom";
+import moment from "moment";
+
+const api = require("../../../utils/api/actors");
 
 const { Text } = Typography;
 const { TextArea } = Input;
 
-const options = [
-  { value: "Burns Bay Road" },
-  { value: "Downing Street" },
-  { value: "Wall Street" },
-];
+interface ItemProps {
+  label: string;
+  value: string;
+}
+
+const options: ItemProps[] = [];
+
+const getActorList = async () => {
+  let res = await api.getAllActors();
+  res.map((val: { id: string; firstName: string; lastName: string }) => {
+    options.push({
+      label: `${val.firstName} ${val.lastName}`,
+      value: `${val.id}`,
+    });
+  });
+};
+
+const onChange: DatePickerProps["onChange"] = (date, dateString) => {
+  console.log(date, dateString);
+};
+getActorList();
+
 const MoviesAdd = () => {
   const [previewer, setPreviewer] = useState("error");
+  const [value, setValue] = useState([]);
+  // const [valueId, setValueId] = useState([]);
+  const [yearRelease, setYearRelease] = useState("");
+
+  // useEffect(() => {}, [options]);
+
+  const selectProps: SelectProps = {
+    mode: "multiple",
+    style: { width: "100%" },
+    value,
+    options,
+    onChange: (newValue: []) => {
+      console.log(newValue);
+      setValue(newValue);
+    },
+    placeholder: "Select Actors...",
+    maxTagCount: "responsive",
+  };
+
+  console.log(value);
 
   const handleChange = (event: any) => {
     setPreviewer(event.target.value);
   };
 
+  const onSubmit = (values: any) => {
+    console.log(yearRelease);
+    console.log(values)
+  };
+
+  const onChangeDatePicker: DatePickerProps["onChange"] = (_, dateString) => {
+    setYearRelease(dateString);
+  };
+  
   return (
     <Card title="Add Movies" size="small" style={{ margin: "25px" }}>
       <Form
@@ -35,7 +88,7 @@ const MoviesAdd = () => {
         labelCol={{ span: 6 }}
         wrapperCol={{ span: 12 }}
         initialValues={{ remember: true }}
-        // onFinish={onFinish}
+        onFinish={onSubmit}
         autoComplete="off"
       >
         <Row>
@@ -50,7 +103,19 @@ const MoviesAdd = () => {
                 },
               ]}
             >
-              <Input />
+              <Input style={{ fontWeight: "bold" }} />
+            </Form.Item>
+            <Form.Item label="Choose an Actor" name="actor">
+              <Input.Group compact>
+                <Space direction="vertical" style={{ width: "100%" }}>
+                  <Select {...selectProps} />
+                </Space>
+                <br />
+                <Text type="secondary">
+                  If actors is not exist you can &nbsp;
+                  <Link to={"/manage/actors/add"}>add actor here</Link>.
+                </Text>
+              </Input.Group>
             </Form.Item>
             <Form.Item
               label="Image URL"
@@ -67,6 +132,7 @@ const MoviesAdd = () => {
             </Form.Item>
 
             <Form.Item
+              initialValue={0}
               label="Budget Cost"
               name="cost"
               rules={[
@@ -76,7 +142,16 @@ const MoviesAdd = () => {
                 },
               ]}
             >
-              <Input />
+              <InputNumber
+                formatter={(value) =>
+                  `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                }
+                min={0}
+                max={99999999999999}
+                step="0.01"
+                parser={(value: any) => value!.replace(/\$\s?|(,*)/g, "")}
+                style={{ width: "50%" }}
+              />
             </Form.Item>
             <Form.Item
               label="Year of Release"
@@ -84,15 +159,19 @@ const MoviesAdd = () => {
               rules={[
                 {
                   required: true,
-                  message: "Year release is required!",
+                  message: "Year of release is required!",
                 },
               ]}
             >
-              <Input />
+              <DatePicker
+                style={{ width: "50%" }}
+                onChange={onChangeDatePicker}
+                picker="year"
+              />
             </Form.Item>
             <Form.Item
               label="Running Time"
-              name="ruuningTime"
+              name="runingTime"
               rules={[
                 {
                   required: true,
@@ -120,26 +199,6 @@ const MoviesAdd = () => {
                 placeholder="Max character is 500"
                 maxLength={500}
               />
-            </Form.Item>
-
-            <Form.Item label="Choose an Actor" name="actor">
-              <Input.Group compact>
-                <AutoComplete
-                  style={{ width: 200 }}
-                  options={options}
-                  placeholder="try to type `b`"
-                  filterOption={(inputValue, option) =>
-                    option!.value
-                      .toUpperCase()
-                      .indexOf(inputValue.toUpperCase()) !== -1
-                  }
-                />
-                <br />
-                <Text type="secondary">
-                  If actors is not exist you can &nbsp;
-                  <Link to={"/actors"}>add actor here</Link>.
-                </Text>
-              </Input.Group>
             </Form.Item>
 
             <Form.Item wrapperCol={{ offset: 6 }}>
