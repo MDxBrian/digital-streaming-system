@@ -12,6 +12,7 @@ import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import SideMenu from "./components/Layout/sideMenu/index";
 import Actors from "./pages/admin/actors/actors";
 import ActorsAdd from "./pages/admin/actors/actorsAdd";
+import ActorsEdit from "./pages/admin/actors/actorsEdit";
 // import Header from "./components/Layout/Header/header";
 import AdminHome from "./pages/admin/home";
 import Movies from "./pages/admin/movies/movies";
@@ -99,10 +100,13 @@ const App: React.FC = () => {
           <Content>
             <Routes>
               <Route path="/" element={<AdminHome />} />
+              <Route path="/manage/users" element={<ActorsEdit />} />
               <Route path="/manage/movies" element={<Movies />} />
               <Route path="/manage/movies/add" element={<MoviesAdd />} />
+              <Route path="/manage/movies/review" element={<MoviesAdd />} />
               <Route path="/manage/actors" element={<Actors />} />
               <Route path="/manage/actors/add" element={<ActorsAdd />} />
+              <Route path="/manage/actors/edit" element={<ActorsEdit />} />
             </Routes>
           </Content>
           <Footer style={{ textAlign: "center" }}>

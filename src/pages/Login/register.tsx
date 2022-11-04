@@ -37,7 +37,7 @@ function Register({ registerOpen, setRegisterOpen }: IModalProps) {
     setRegisterOpen(false);
   };
 
-  const onFinish = async (data: any) => {
+  const onSubmit = async (data: any) => {
     // setConfirmLoading(false);
     if (data.password !== data.confirmPassword)
       return alert("Password not match, please try again!");
@@ -82,7 +82,7 @@ function Register({ registerOpen, setRegisterOpen }: IModalProps) {
         labelCol={{ span: 8 }}
         wrapperCol={{ span: 12 }}
         initialValues={{ remember: true }}
-        onFinish={onFinish}
+        onFinish={onSubmit}
         autoComplete="off"
       >
         <Form.Item

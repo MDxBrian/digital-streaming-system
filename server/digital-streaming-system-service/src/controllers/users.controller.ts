@@ -78,7 +78,7 @@ export const RequestBody = {
   },
 };
 
-export class UserController {
+export class UsersController {
   constructor(
     @repository(UsersRepository)
     public usersRepository: UsersRepository,
