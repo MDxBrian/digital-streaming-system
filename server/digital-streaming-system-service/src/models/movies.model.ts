@@ -43,7 +43,7 @@ export class Movies extends Entity {
     type: 'string',
     required: true,
   })
-  Director: string;
+  director: string;
 
   @property({
     type: 'string',
