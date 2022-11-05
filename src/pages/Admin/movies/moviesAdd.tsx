@@ -14,10 +14,11 @@ import {
   InputNumber,
 } from "antd";
 import type { DatePickerProps, SelectProps } from "antd";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import moment from "moment";
 
-const api = require("../../../utils/api/actors");
+const apiActors = require("../../../utils/api/actors");
+const apiMovies = require("../../../utils/api/movies");
 
 const { Text } = Typography;
 const { TextArea } = Input;
@@ -30,7 +31,7 @@ interface ItemProps {
 const options: ItemProps[] = [];
 
 const getActorList = async () => {
-  let res = await api.getAllActors();
+  let res = await apiActors.getAllActors();
   res.map((val: { id: string; firstName: string; lastName: string }) => {
     options.push({
       label: `${val.firstName} ${val.lastName}`,
@@ -39,12 +40,11 @@ const getActorList = async () => {
   });
 };
 
-const onChange: DatePickerProps["onChange"] = (date, dateString) => {
-  console.log(date, dateString);
-};
 getActorList();
 
 const MoviesAdd = () => {
+  const navigate = useNavigate();
+
   const [previewer, setPreviewer] = useState("error");
   const [value, setValue] = useState([]);
   // const [valueId, setValueId] = useState([]);
@@ -65,21 +65,32 @@ const MoviesAdd = () => {
     maxTagCount: "responsive",
   };
 
-  console.log(value);
-
   const handleChange = (event: any) => {
     setPreviewer(event.target.value);
   };
 
-  const onSubmit = (values: any) => {
-    console.log(yearRelease);
-    console.log(values)
+  const onSubmit = async (values: any) => {
+    const payload = {
+      title: values.title,
+      imageUrl: values.imageUrl,
+      budgetCost: values.cost,
+      yearOfRelease: yearRelease,
+      runningTime: values.runningTime,
+      director: values.director,
+      description: values.description,
+      actorsId: value,
+    };
+
+    let res = await apiMovies.addMovies(payload);
+    if (res) {
+      return navigate("/manage/movies");
+    }
   };
 
   const onChangeDatePicker: DatePickerProps["onChange"] = (_, dateString) => {
     setYearRelease(dateString);
   };
-  
+
   return (
     <Card title="Add Movies" size="small" style={{ margin: "25px" }}>
       <Form
@@ -171,7 +182,7 @@ const MoviesAdd = () => {
             </Form.Item>
             <Form.Item
               label="Running Time"
-              name="runingTime"
+              name="runningTime"
               rules={[
                 {
                   required: true,

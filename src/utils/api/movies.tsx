@@ -1,8 +1,8 @@
 import axios from "axios";
 
-export const addActors = (payload: object) => {
+export const addMovies = (payload: object) => {
   return axios
-    .post("http://localhost:3000/actors", payload)
+    .post("http://localhost:3000/movies", payload)
     .then((res) => {
       if (res.status === 200) return true;
     })
@@ -11,9 +11,9 @@ export const addActors = (payload: object) => {
     });
 };
 
-export const getAllActors = () => {
+export const getAllMovies = () => {
   return axios
-    .get("http://localhost:3000/actors")
+    .get("http://localhost:3000/movies")
     .then((res) => {
       return res.data;
     })
@@ -22,9 +22,9 @@ export const getAllActors = () => {
     });
 };
 
-export const deleteActors = (key: string) => {
+export const deleteMovies = (key: string) => {
   return axios
-    .delete(`http://localhost:3000/actors/${key}`)
+    .delete(`http://localhost:3000/movies/${key}`)
     .then((res) => {
       if (res.status === 204) return true;
     })

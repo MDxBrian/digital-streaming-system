@@ -52,6 +52,7 @@ const ActorsAdd = () => {
     }
     return setLoading(false);
   };
+  
 
   return (
     <Card title="Add Actors" size="small" style={{ margin: "25px" }}>
