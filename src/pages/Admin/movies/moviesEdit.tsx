@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import type { ColumnsType } from "antd/es/table";
 import {
   Form,
   Input,

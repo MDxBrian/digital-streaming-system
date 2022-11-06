@@ -181,12 +181,12 @@ const MoviesAdd = () => {
               />
             </Form.Item>
             <Form.Item
-              label="Running Time"
+              label="Duration"
               name="runningTime"
               rules={[
                 {
                   required: true,
-                  message: "Running time is required!",
+                  message: "Duration is required!",
                 },
               ]}
             >

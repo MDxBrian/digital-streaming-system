@@ -30,10 +30,6 @@ function Login({ open, setOpen }: IModalProps) {
     }, 2000);
   };
 
-  const handleCancel = () => {
-    console.log("Clicked cancel button");
-    setOpen(false);
-  };
 
   const handleCancelRegister = () => {
     console.log("Clicked cancel button");
@@ -72,25 +68,19 @@ function Login({ open, setOpen }: IModalProps) {
   };
 
   return (
-    <div>
-      {registerOpen && (
-        <Register
-          registerOpen={registerOpen}
-          setRegisterOpen={setRegisterOpen}
-        />
-      )}
+    <>
       <Modal
         title="LOGIN"
         open={open}
         confirmLoading={confirmLoading}
-        onCancel={handleCancel}
+        onCancel={() =>  setOpen(false)}
         footer={[
           <Form.Item
             name="register"
             style={{ textAlign: "center", fontSize: "small" }}
           >
             Have no account yet?
-            <Link onClick={showRegisterModal} to={""}>
+            <Link onClick={() =>   setOpen(false)} to={"/register"}>
               &nbsp; Register
             </Link>
           </Form.Item>,
@@ -145,7 +135,7 @@ function Login({ open, setOpen }: IModalProps) {
           </Form.Item>
         </Form>
       </Modal>
-    </div>
+    </>
   );
 }
 

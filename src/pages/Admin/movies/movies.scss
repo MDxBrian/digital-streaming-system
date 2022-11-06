@@ -11,3 +11,20 @@
   .ant-card-head-title {
     font-size: large;
   }
+
+  .ant-card-body {
+    padding: 10px;
+  }
+  
+  .ant-list-empty-text {
+    background: opacify($color: #000c17, $amount: 0);
+    background-color: opacity(0.2);
+  }
+
+  .ant-empty-description {
+    color: white;
+  }
+
+  .demo-loadmore-list {
+    min-height: 350px;
+  }

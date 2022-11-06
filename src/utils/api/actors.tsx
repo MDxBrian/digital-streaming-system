@@ -11,6 +11,17 @@ export const addActors = (payload: object) => {
     });
 };
 
+export const getActorDetails = (id: string) => {
+  return axios
+    .get(`http://localhost:3000/actors/${id}`)
+    .then((res) => {
+      return res.data;
+    })
+    .catch((err) => {
+      throw err;
+    });
+};
+
 export const getAllActors = () => {
   return axios
     .get("http://localhost:3000/actors")
