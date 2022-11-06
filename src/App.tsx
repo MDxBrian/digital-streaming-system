@@ -15,9 +15,12 @@ import ActorsAdd from "./pages/admin/actors/actorsAdd";
 import ActorsEdit from "./pages/admin/actors/actorsEdit";
 // import Header from "./components/Layout/Header/header";
 import AdminHome from "./pages/admin/home";
+import MovieDetails from "./pages/admin/movies/movieDetails";
 import Movies from "./pages/admin/movies/movies";
 import MoviesAdd from "./pages/admin/movies/moviesAdd";
+import MoviesReview from "./pages/admin/movies/moviesReview";
 import Login from "./pages/login/login";
+import Register from "./pages/login/register";
 
 const { Header, Content, Footer } = Layout;
 
@@ -61,7 +64,7 @@ const App: React.FC = () => {
               <Col
                 span={12}
                 style={{
-                  color: "green",
+                  color: "#f0f2f5",
                   fontFamily: "initial",
                   fontSize: "26px",
                   paddingLeft: "20px",
@@ -100,17 +103,19 @@ const App: React.FC = () => {
           <Content>
             <Routes>
               <Route path="/" element={<AdminHome />} />
+              <Route path="/register" element={<Register />} />
               <Route path="/manage/users" element={<ActorsEdit />} />
               <Route path="/manage/movies" element={<Movies />} />
               <Route path="/manage/movies/add" element={<MoviesAdd />} />
-              <Route path="/manage/movies/review" element={<MoviesAdd />} />
+              <Route path="/manage/movies/review" element={<MoviesReview />} />
+              <Route path="/manage/movies/details" element={<MovieDetails />} />
               <Route path="/manage/actors" element={<Actors />} />
               <Route path="/manage/actors/add" element={<ActorsAdd />} />
               <Route path="/manage/actors/edit" element={<ActorsEdit />} />
             </Routes>
           </Content>
           <Footer style={{ textAlign: "center" }}>
-            Created By Mark Brian @ Collabera 2022
+            Created By Mark Brian @ 2022
           </Footer>
         </Layout>
       </Layout>

@@ -1,40 +1,35 @@
 import React, { useState } from "react";
-import { Layout, Modal, Col, Row, Button, Form, Input, Checkbox } from "antd";
+import { Layout, Card, Col, Row, Button, Form, Input, Checkbox } from "antd";
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 
-export interface IModalProps {
-  registerOpen: any;
-  setRegisterOpen: any;
-}
+const api = require("../../utils/api");
 
-const api = require ("../../utils/api")
-
-function Register({ registerOpen, setRegisterOpen }: IModalProps) {
+function Register() {
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [modalText, setModalText] = useState("Content of the modal");
   const [loading, setLoading] = useState(false);
 
-  const showRegisterModal = () => {
-    setRegisterOpen(true);
-  };
+  // const showRegisterModal = () => {
+  //   setRegisterOpen(true);
+  // };
 
   const handleOk = () => {
     setModalText("The modal will be closed after two seconds");
     setConfirmLoading(true);
     setTimeout(() => {
-      setRegisterOpen(false);
+      // setRegisterOpen(false);
       setConfirmLoading(false);
     }, 2000);
   };
 
   const handleCancel = () => {
     console.log("Clicked cancel button");
-    setRegisterOpen(false);
+    // setRegisterOpen(false);
   };
 
   const handleCancelRegister = () => {
     console.log("Clicked cancel button");
-    setRegisterOpen(false);
+    // setRegisterOpen(false);
   };
 
   const onSubmit = async (data: any) => {
@@ -53,98 +48,130 @@ function Register({ registerOpen, setRegisterOpen }: IModalProps) {
     setLoading(true);
     let res = await api.registerUser(payload);
     if (res) {
-      alert(`Registered Success! ${data.fullname}`)
-      setRegisterOpen(false)
+      alert(`Registered Success! ${data.fullname}`);
+      // setRegisterOpen(false)
       setLoading(true);
     }
     return setLoading(false);
   };
 
-
   const onFinishFailed = (errorInfo: any) => {
     console.log("Failed:", errorInfo);
   };
   return (
-    <Modal
-      title="REGISTER"
-      open={registerOpen}
-      onOk={handleOk}
-      confirmLoading={confirmLoading}
-      onCancel={() => setRegisterOpen(false)}
-      footer={[
-        <Button key="back" onClick={() => setRegisterOpen(false)}>
-          Cancel
-        </Button>,
-      ]}
+    <Card
+      size="small"
+      style={{
+        margin: "25px",
+        borderRadius: "10px",
+        boxShadow: "10px 10px 5px #dee0e3",
+        width: "50%",
+        marginLeft: "auto",
+        marginRight: "auto",
+        marginTop: "5%",
+        marginBottom: "auto",
+      }}
     >
-      <Form
-        name="basic"
-        labelCol={{ span: 8 }}
-        wrapperCol={{ span: 12 }}
-        initialValues={{ remember: true }}
-        onFinish={onSubmit}
-        autoComplete="off"
+      <Card
+        size="small"
+        style={{
+          backgroundImage:
+            "linear-gradient(0deg, rgba(0,0,0,1) 3%, rgba(0,34,68,1) 100%)",
+          color: "white",
+          textAlign: "center"
+        }}
+        
       >
-        <Form.Item
-          label="Full Name"
-          name="fullname"
-          rules={[
-            {
-              required: true,
-              message: "Fullname is required!"
-            }
-          ]}
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item
-          label="Email"
-          name="email"
-          rules={[
-            {
-              required: true,
-              type: "email",
-              message: "Email is required!"
-            },
-          ]}
-        >
-          <Input />
-        </Form.Item>
+            <h1
+              style={{
+                fontWeight: "lighter",
+                fontSize: "42px",
+                color: "#ffff",
+              }}
+            >
+              REGISTER
+            </h1>
+            <Form
+              name="basic"
+              labelCol={{ span: 8 }}
+              wrapperCol={{ span: 10 }}
+              initialValues={{ remember: true }}
+              onFinish={onSubmit}
+              autoComplete="off"
+            >
+              <Form.Item
+                label={<span style={{ color: "#c5c5c5" }}>First Name</span>}
+                name="firstName"
+                rules={[
+                  {
+                    required: true,
+                    message: "First name is required!",
+                  },
+                ]}
+              >
+                <Input />
+              </Form.Item>
+              <Form.Item
+                label={<span style={{ color: "#c5c5c5" }}>Last Name</span>}
+                name="lastName"
+                rules={[
+                  {
+                    required: true,
+                    message: "Last name is required!",
+                  },
+                ]}
+              >
+                <Input />
+              </Form.Item>
+              <Form.Item
+                label={<span style={{ color: "#c5c5c5" }}>Email</span>}
+                name="email"
+                rules={[
+                  {
+                    required: true,
+                    type: "email",
+                    message: "Email is required!",
+                  },
+                ]}
+              >
+                <Input />
+              </Form.Item>
 
-        <Form.Item
-          label="Password"
-          name="password"
-          rules={[
-            {
-              required: true,
-              message: "Password is required!"
-            },
-          ]}
-        >
-          <Input.Password />
-        </Form.Item>
+              <Form.Item
+                label={<span style={{ color: "#c5c5c5" }}>Password</span>}
+                name="password"
+                rules={[
+                  {
+                    required: true,
+                    message: "Password is required!",
+                  },
+                ]}
+              >
+                <Input.Password />
+              </Form.Item>
 
-        <Form.Item
-          label="Confirm Password"
-          name="confirmPassword"
-          rules={[
-            {
-              required: true,
-              message: "Confirm password is required!"
-            },
-          ]}
-        >
-          <Input.Password />
-        </Form.Item>
-        <Form.Item
-          wrapperCol={{ offset: 8, span: 12 }}
-        >
-          <Button type="primary" htmlType="submit">
-            Register
-          </Button>
-        </Form.Item>
-      </Form>
-    </Modal>
+              <Form.Item
+                label={
+                  <span style={{ color: "#c5c5c5" }}>Confirm Password</span>
+                }
+                name="confirmPassword"
+                rules={[
+                  {
+                    required: true,
+                    message: "Confirm password is required!",
+                  },
+                ]}
+              >
+                <Input.Password />
+              </Form.Item>
+              <Form.Item wrapperCol={{ offset: 8, span: 10 }}>
+                <Button type="primary" htmlType="submit">
+                  Register
+                </Button>
+              </Form.Item>
+            </Form>
+      </Card>
+    </Card>
   );
 }
 

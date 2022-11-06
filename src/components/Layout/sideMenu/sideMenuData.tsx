@@ -11,9 +11,9 @@ export const SideMenuData: any = [
   {
     key: "0",
     icon: <HomeFilled />,
-    label: <b>DASHBOARD</b>,
+    label: <b>HOME</b>,
     path: "/",
-    page: "dashboard",
+    page: "home",
   },
   {
     key: "1",

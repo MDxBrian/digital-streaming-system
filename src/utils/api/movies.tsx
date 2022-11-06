@@ -11,6 +11,18 @@ export const addMovies = (payload: object) => {
     });
 };
 
+
+export const getMovieDetails = (id: string) => {
+    return axios
+      .get(`http://localhost:3000/movies/${id}`)
+      .then((res) => {
+        return res.data;
+      })
+      .catch((err) => {
+        throw err;
+      });
+  };
+
 export const getAllMovies = () => {
   return axios
     .get("http://localhost:3000/movies")
