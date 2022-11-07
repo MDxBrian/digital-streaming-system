@@ -1,19 +1,27 @@
-import {Entity, model, property} from '@loopback/repository';
+import {Entity, hasOne, model, property} from '@loopback/repository';
 
+import {UserCredentials} from '@loopback/authentication-jwt';
 @model({settings: {strict: false}})
 export class Users extends Entity {
   @property({
     type: 'string',
     id: true,
     generated: false,
+    defaultFn: 'uuidv4',
   })
-  id?: string;
+  id: string;
 
   @property({
     type: 'string',
     required: true,
   })
-  fullname: string;
+  firstName: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  lastName: string;
 
   @property({
     type: 'string',
@@ -29,7 +37,7 @@ export class Users extends Entity {
 
   @property({
     type: 'string',
-    required: true,
+    required: false,
   })
   password: string;
 
@@ -38,7 +46,9 @@ export class Users extends Entity {
     required: true,
   })
   status: boolean;
-  
+
+  @hasOne(() => UserCredentials)
+  userCredentials: UserCredentials;
 
   // Define well-known properties here
 

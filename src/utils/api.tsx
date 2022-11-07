@@ -13,11 +13,13 @@ export const registerUser = (payload: object) => {
     });
 };
 
-export const login = (payload: {email: string, remember: boolean}) => {
+export const login = (payload: { email: string; remember: boolean }) => {
   return axios
     .post("http://localhost:3000/signin", payload)
     .then((res) => {
-      if(payload.remember) common.setCookie("token", res.data.token);
+      if (payload.remember) {
+        common.setCookie("token", res.data.token);
+      }
       sessionStorage.setItem("token", res.data.token);
       return true;
     })
