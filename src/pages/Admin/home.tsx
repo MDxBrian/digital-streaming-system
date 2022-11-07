@@ -59,7 +59,7 @@ function AdminHome() {
     ratingAvg: 10,
     actorsId: movies.actorsId,
   }));
-  
+
   return (
     <Card
       title={
@@ -73,7 +73,7 @@ function AdminHome() {
         borderRadius: "10px",
         boxShadow: "10px 10px 5px #dee0e3",
       }}
-      extra={<a href="#">See more</a>}
+      // extra={<a href="#">See more</a>
     >
       <List
         grid={{ gutter: 16, column: 8 }}
@@ -96,7 +96,7 @@ function AdminHome() {
                     src={item.imageUrl}
                   />
                 }
-                onClick={ async () => {
+                onClick={async () => {
                   navigate("manage/movies/details", {
                     state: {
                       id: item.id,

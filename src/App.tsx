@@ -115,7 +115,9 @@ function getItem(
 
 const App: React.FC = () => {
   // const [collapsed, setCollapsed] = useState(false);
-  const [roleId, setRoleId] = useState(2)
+  const [roleId, setRoleId] = useState(2);
+  const [userId, setUserId] = useState("");
+
   const [open, setOpen] = useState(false);
   const [registerOpen, setRegisterOpen] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
@@ -142,18 +144,18 @@ const App: React.FC = () => {
       setIsVisibileAvatar(false);
     }
     const details = await apiUsers.getUserDetails(res);
+    setUserId(details.id)
     setName(details.firstName.charAt(0) + details.lastName.charAt(0));
     setIsVisibileAvatar(true);
     setIsVisibleSiginInButton(false);
-    
-    if(
-      details.roleId === 1) {
-        setIsVisibileSideMenu(true)
-        setRoleId(1)
-      } else {
-        setIsVisibileSideMenu(false);
-        setRoleId(2)
-      }
+
+    if (details.roleId === 1) {
+      setIsVisibileSideMenu(true);
+      setRoleId(1);
+    } else {
+      setIsVisibileSideMenu(false);
+      setRoleId(2);
+    }
   };
 
   const showModal = () => {
@@ -251,12 +253,15 @@ const App: React.FC = () => {
               <Route path="/" element={<AdminHome />} />
               <Route path="/register" element={<Register />} />
 
-              <Route path="/manage/movies/details" element={<MovieDetails roleId={roleId}/>} />
+              <Route
+                path="/manage/movies/details"
+                element={<MovieDetails roleId={roleId} userId={userId} />}
+              />
               <Route
                 path="register/success"
                 element={<RegisterSuccess />}
               ></Route>
-              <Route path="*" element={<PrivateRoute />} />
+              <Route  path="*" element={<AdminHome />} />
               <Route element={<PrivateRoute />}>
                 <Route path="/manage/users" element={<ActorsEdit />} />
                 <Route path="/manage/movies" element={<Movies />} />
