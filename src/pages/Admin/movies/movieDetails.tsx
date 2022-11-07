@@ -88,7 +88,7 @@ const Editor = ({ onChange, onSubmit, submitting, value }: EditorProps) => (
   </>
 );
 
-const MovieDetails = () => {
+const MovieDetails = (props: any) => {
   const location = useLocation();
   const navigate = useNavigate();
   const [visibleReviewerButton, setVibileReviewerButton] = useState(false);
@@ -198,6 +198,7 @@ const MovieDetails = () => {
     const token = sessionStorage.getItem("token");
     token ? setVibileReviewerDetails(true) : setOpenLoginModal(true);
   };
+  console.log(props.roleId);
 
   return (
     <>
@@ -222,6 +223,8 @@ const MovieDetails = () => {
           style={{
             backgroundImage:
               "linear-gradient(0deg, rgba(0,0,0,1) 3%, rgba(0,34,68,1) 100%)",
+            marginRight: "12px",
+            boxShadow: "10px 10px 5px #dee0e3",
           }}
         >
           <Row>
@@ -277,7 +280,7 @@ const MovieDetails = () => {
                   <span style={{ color: "white" }}>Rating Avg: </span>
                   <span style={{ color: "#c5c5c5" }}>
                     7.85 | 9 votes
-                    <Rate allowHalf defaultValue={3.7} />
+                    <Rate allowHalf defaultValue={3.7} disabled/>
                   </span>
                 </Col>
               </Row>
@@ -317,26 +320,28 @@ const MovieDetails = () => {
                   )}
                 />
                 <br /> <br /> <br />
-                <span style={{ color: "white", marginTop: "60px" }}>
-                  Review:
-                  <br />
-                  <Tooltip title="Vote">
-                    <Button
-                      size="small"
-                      type="primary"
-                      style={{
-                        color: "white",
+                {props.roleId !== 1 && (
+                  <span style={{ color: "white", marginTop: "60px" }}>
+                    Review:
+                    <br />
+                    <Tooltip title="Vote">
+                      <Button
+                        size="small"
+                        type="primary"
+                        style={{
+                          color: "white",
 
-                        marginTop: "10px",
-                        borderRadius: "25px",
-                      }}
-                      icon={<FileAddOutlined />}
-                      onClick={onClickReviewButton}
-                    >
-                      Add Review
-                    </Button>
-                  </Tooltip>
-                </span>
+                          marginTop: "10px",
+                          borderRadius: "25px",
+                        }}
+                        icon={<FileAddOutlined />}
+                        onClick={onClickReviewButton}
+                      >
+                        Add Review
+                      </Button>
+                    </Tooltip>
+                  </span>
+                )}
                 {visibleReviewerDetails ? (
                   <Comment
                     avatar={
@@ -378,7 +383,13 @@ const MovieDetails = () => {
             </Col>
           </Row>
         </Card>
-        <Card style={{ marginTop: "25px", borderRadius: "15px" }}>
+        <Card
+          style={{
+            marginTop: "25px",
+            marginRight: "12px",
+            borderRadius: "15px",
+          }}
+        >
           <List
             className="demo-loadmore-list"
             loading={initLoading}

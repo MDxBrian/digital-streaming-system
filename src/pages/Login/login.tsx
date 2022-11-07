@@ -1,7 +1,13 @@
 import React, { useState } from "react";
 import { Layout, Modal, Col, Row, Button, Form, Input, Checkbox } from "antd";
 import type { CheckboxChangeEvent } from "antd/es/checkbox";
-import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  Link,
+  useNavigate,
+} from "react-router-dom";
 import Register from "./register";
 
 export interface IModalProps {
@@ -12,6 +18,8 @@ export interface IModalProps {
 const api = require("../../utils/api");
 
 function Login({ open, setOpen }: IModalProps) {
+  const navigate = useNavigate();
+
   const [registerOpen, setRegisterOpen] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [modalText, setModalText] = useState("Content of the modal");
@@ -19,21 +27,6 @@ function Login({ open, setOpen }: IModalProps) {
   const [checked, setChecked] = useState(false);
   const showRegisterModal = () => {
     setRegisterOpen(true);
-  };
-
-  const handleOk = () => {
-    setModalText("The modal will be closed after two seconds");
-    setConfirmLoading(true);
-    setTimeout(() => {
-      setOpen(false);
-      setConfirmLoading(false);
-    }, 2000);
-  };
-
-
-  const handleCancelRegister = () => {
-    console.log("Clicked cancel button");
-    setRegisterOpen(false);
   };
 
   const onFinish = async (data: any) => {
@@ -48,8 +41,7 @@ function Login({ open, setOpen }: IModalProps) {
     setLoading(true);
     let res = await api.login(payload);
     if (res) {
-      alert(`Successfully Login`);
-      setOpen(false);
+      window.location.reload();
     }
     return setLoading(false);
   };
@@ -62,7 +54,6 @@ function Login({ open, setOpen }: IModalProps) {
     setChecked(!checked);
   };
 
-  
   const onChange = (e: CheckboxChangeEvent) => {
     setChecked(e.target.checked);
   };
@@ -73,14 +64,14 @@ function Login({ open, setOpen }: IModalProps) {
         title="LOGIN"
         open={open}
         confirmLoading={confirmLoading}
-        onCancel={() =>  setOpen(false)}
+        onCancel={() => setOpen(false)}
         footer={[
           <Form.Item
             name="register"
             style={{ textAlign: "center", fontSize: "small" }}
           >
             Have no account yet?
-            <Link onClick={() =>   setOpen(false)} to={"/register"}>
+            <Link onClick={() => setOpen(false)} to={"/register"}>
               &nbsp; Register
             </Link>
           </Form.Item>,
@@ -125,8 +116,8 @@ function Login({ open, setOpen }: IModalProps) {
             name="remember"
             valuePropName="checked"
             wrapperCol={{ offset: 8, span: 12 }}
-          > 
-          <Checkbox checked={checked} onChange={onChange}>
+          >
+            <Checkbox checked={checked} onChange={onChange}>
               Remember me
             </Checkbox>
             <Button type="primary" htmlType="submit" style={{ float: "right" }}>
