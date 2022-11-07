@@ -23,14 +23,26 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Login from "../../login/login";
 import Register from "../../login/register";
 
+var arrColor = [
+  "crimson",
+  "cadetblue",
+  "blueviolet",
+  "darkslateblue",
+  "darkmagenta",
+  "brown",
+  "darkolivegreen",
+  "darkgoldenrod",
+];
+
 const apiActors = require("../../../utils/api/actors");
 const apiMovies = require("../../../utils/api/movies");
+const apiUsers = require("../../../utils/api/users");
+const apiReviewers = require("../../../utils/api/reviewers");
 
 const { Meta } = Card;
 const { Paragraph, Text } = Typography;
 const { TextArea } = Input;
 interface DataType {
-  id: string;
   imageUrl: string;
   fullname: string;
   firstName: string;
@@ -54,6 +66,16 @@ interface DataType {
   loading: boolean;
 }
 
+interface DataType {
+  id?: string;
+  date: string;
+  content: string;
+  rate: number;
+  userId: string;
+  initialName: string;
+  fullName: string;
+}
+
 const count = 3;
 const fakeDataUrl = `https://randomuser.me/api/?results=${count}&inc=name,gender,email,nat,picture&noinfo`;
 interface CommentItem {
@@ -72,8 +94,17 @@ interface EditorProps {
 const Editor = ({ onChange, onSubmit, submitting, value }: EditorProps) => (
   <>
     <Form.Item>
-      <TextArea rows={4} onChange={onChange} value={value} />
-      <span style={{ color: "white" }}> VOTE (1-5): </span> <Rate />
+      <TextArea
+        rows={4}
+        onChange={onChange}
+        value={value}
+        style={{
+          borderColor: "black",
+          background:
+            "linear-gradient(180deg, rgba(0,0,0,1) 0%, rgba(0,34,68,1) 5%)",
+          color: "#c5c5c5",
+        }}
+      />
     </Form.Item>
     <Form.Item>
       <Button
@@ -91,7 +122,6 @@ const Editor = ({ onChange, onSubmit, submitting, value }: EditorProps) => (
 const MovieDetails = (props: any) => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [visibleReviewerButton, setVibileReviewerButton] = useState(false);
   const [visibleReviewerDetails, setVibileReviewerDetails] = useState(false);
 
   const [ellipsis, setEllipsis] = useState(true);
@@ -103,8 +133,12 @@ const MovieDetails = (props: any) => {
   const [data, setData] = useState<DataType[]>([]);
   const [list, setList] = useState<DataType[]>([]);
 
+  const [myReviews, setMyReviews]: any = useState([]);
+  const [getAllReviewDetails, setGetAllReviewDetails]: any = useState([]);
+
   useEffect(() => {
     fetchActorsImages();
+    fetchReviewers();
     fetch(fakeDataUrl)
       .then((res) => res.json())
       .then((res) => {
@@ -157,11 +191,55 @@ const MovieDetails = (props: any) => {
       setActorList(newObj);
     });
   };
+
   const dataActors = actorList.map((val: DataType) => ({
     id: val.id,
     title: val.title,
     imageUrl: val.imageUrl,
     fullname: val.firstName + " " + val.lastName,
+  }));
+
+  const getInitialName = async (data: string) => {
+    const details = await apiUsers.getUserDetails(data);
+    return details.firstName.charAt(0) + details.lastName.charAt(0);
+  };
+
+  const fetchReviewers = async () => {
+    let userId = await apiUsers.getWhoAmI(sessionStorage.getItem("token"));
+    let res = await apiReviewers.getAllReviwers();
+    const reviewersList: string[] = res;
+    let newObj: any[] = [];
+    let newObjAll: any[] = [];
+    reviewersList.map(async (data: any) => {
+      if (data.userId == userId && data.movieId == location.state.id) {
+        newObj.push(data);
+      }
+      if (data.movieId == location.state.id) {
+        const initialName: string = await getInitialName(data.userId);
+        console.log(initialName);
+        newObjAll.push({
+          id: data.id,
+          date: data.date,
+          rate: data.rate,
+          fullName: data.rate,
+          content: data.content,
+          userId: data.userId,
+          initialName: initialName,
+        });
+      }
+    });
+    setMyReviews(newObj);
+    setGetAllReviewDetails(newObjAll);
+  };
+
+  const dataAllReviewers = getAllReviewDetails.map((val: DataType) => ({
+    id: val.id,
+    date: val.date,
+    rate: val.rate,
+    content: val.content,
+    userId: val.userId,
+    initialName: val.initialName,
+    fullName: val.fullName,
   }));
 
   const [comments, setComments] = useState<CommentItem[]>([]);
@@ -170,24 +248,23 @@ const MovieDetails = (props: any) => {
   const [openLoginModal, setOpenLoginModal] = useState(false);
   const [openRegisterModal, setOpenRegisterModal] = useState(false);
 
-  const handleSubmit = () => {
-    if (!value) return;
-
-    setSubmitting(true);
-
-    setTimeout(() => {
-      setSubmitting(false);
-      setValue("");
-      setComments([
-        ...comments,
-        {
-          author: "Han Solo",
-          avatar: "https://joeschmoe.io/api/v1/random",
-          content: <p>{value}</p>,
-          datetime: moment("2016-11-22").fromNow(),
-        },
-      ]);
-    }, 1000);
+  const handleSubmit = async () => {
+    const payload = {
+      rate: rate,
+      content: value,
+      date: `${new Date().toISOString().slice(0, 10)} ${new Date()
+        .toLocaleString()
+        .slice(11, 19)}`,
+      status: "PENDING",
+      userId: props.userId,
+      movieId: location.state.id,
+    };
+    let res = await apiReviewers.addReviewers(payload);
+    if (res) {
+      window.location.reload();
+    } else {
+      return;
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -198,7 +275,8 @@ const MovieDetails = (props: any) => {
     const token = sessionStorage.getItem("token");
     token ? setVibileReviewerDetails(true) : setOpenLoginModal(true);
   };
-  console.log(props.roleId);
+
+  const [rate, setRate] = useState(0);
 
   return (
     <>
@@ -280,7 +358,7 @@ const MovieDetails = (props: any) => {
                   <span style={{ color: "white" }}>Rating Avg: </span>
                   <span style={{ color: "#c5c5c5" }}>
                     7.85 | 9 votes
-                    <Rate allowHalf defaultValue={3.7} disabled/>
+                    <Rate allowHalf defaultValue={3.7} disabled />
                   </span>
                 </Col>
               </Row>
@@ -320,7 +398,38 @@ const MovieDetails = (props: any) => {
                   )}
                 />
                 <br /> <br /> <br />
-                {props.roleId !== 1 && (
+                {/* Checking the role id and if review has already made */}
+                {myReviews.length && (
+                  <span style={{ color: "white", marginTop: "60px" }}>
+                    My Review: &nbsp;
+                    <Text
+                      style={{
+                        color: `${
+                          myReviews[0].status === "PENDING"
+                            ? "#ff4646"
+                            : "#4de31c"
+                        }`,
+                        fontWeight: "bolder",
+                      }}
+                    >
+                      {myReviews[0].status}
+                    </Text>
+                    <br />
+                    <Rate disabled value={myReviews[0].rate} />
+                    <Paragraph
+                      type="secondary"
+                      style={{ color: "#c5c5c5" }}
+                      ellipsis={
+                        ellipsis
+                          ? { rows: 2, expandable: true, symbol: "see more" }
+                          : false
+                      }
+                    >
+                      {myReviews[0].content}
+                    </Paragraph>
+                  </span>
+                )}
+                {props.roleId !== 1 && !myReviews.length && (
                   <span style={{ color: "white", marginTop: "60px" }}>
                     Review:
                     <br />
@@ -351,12 +460,17 @@ const MovieDetails = (props: any) => {
                       />
                     }
                     content={
-                      <Editor
-                        onChange={handleChange}
-                        onSubmit={handleSubmit}
-                        submitting={submitting}
-                        value={value}
-                      />
+                      <span style={{ color: "white" }}>
+                        {" "}
+                        VOTE (1-5) : &nbsp;
+                        <Rate onChange={(data) => setRate(data)} />
+                        <Editor
+                          onChange={handleChange}
+                          onSubmit={handleSubmit}
+                          submitting={submitting}
+                          value={value}
+                        />
+                      </span>
                     }
                   />
                 ) : (
@@ -384,39 +498,48 @@ const MovieDetails = (props: any) => {
           </Row>
         </Card>
         <Card
+          title={
+            <div style={{ fontWeight: "bolder", color: "#002140" }}>
+              REVIEWS / COMMENTS
+            </div>
+          }
+          size="small"
           style={{
             marginTop: "25px",
             marginRight: "12px",
             borderRadius: "15px",
+            boxShadow: "10px 10px 5px #dee0e3",
           }}
         >
           <List
-            className="demo-loadmore-list"
-            loading={initLoading}
+            // className="demo-loadmore-list"
+            // loading={initLoading}
             itemLayout="horizontal"
-            loadMore={loadMore}
-            dataSource={list}
-            renderItem={(item) => (
-              <List.Item
-                actions={[
-                  <a key="list-loadmore-edit">edit</a>,
-                  <a key="list-loadmore-more">more</a>,
-                ]}
-              >
-                <Skeleton avatar title={false} loading={item.loading} active>
-                  <List.Item.Meta
-                    avatar={
-                      <Avatar
-                        style={{ color: "#f56a00", backgroundColor: "#fde3cf" }}
-                      >
-                        U
-                      </Avatar>
-                    }
-                    title={<a href="https://ant.design">{item.name?.last}</a>}
-                    description="Ant Design, a design language for background applications, is refined by Ant UED Team"
-                  />
-                  <div>content</div>
-                </Skeleton>
+            // loadMore={loadMore}
+            dataSource={dataAllReviewers}
+            renderItem={(item: any) => (
+              <List.Item>
+                <List.Item.Meta
+                  avatar={
+                    <Avatar
+                      style={{
+                        marginTop: "7px",
+                        backgroundColor: `${
+                          arrColor[Math.floor(Math.random() * arrColor.length)]
+                        }`,
+                      }}
+                    >
+                      {item.initialName}
+                    </Avatar>
+                  }
+                  title={
+                    <span>
+                      {item.initialName}
+                      <Rate defaultValue={item.rate} disabled />
+                    </span>
+                  }
+                  description={item.content}
+                />
               </List.Item>
             )}
           />
