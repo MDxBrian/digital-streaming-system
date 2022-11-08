@@ -24,6 +24,7 @@ export const login = (payload: { email: string; remember: boolean }) => {
       return true;
     })
     .catch(() => {
-      return alert("Login failed!");
+      return false
     });
 };
+

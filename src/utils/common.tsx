@@ -25,3 +25,17 @@ export const getCookie = (cname: string) => {
   }
   return "";
 };
+
+export const ratingAvg = (data: any[]): any => {
+  let sum = 0;
+  let length = 0;
+  data.map((val: any) => {
+    console.log(val)
+    sum += val.rate;
+    length++;
+  });
+  console.log(sum)
+  const reviewCount = length || 1;
+  console.log(parseFloat((sum / reviewCount || 0).toFixed(2)));
+  return parseFloat((sum / reviewCount || 0).toFixed(2))
+};

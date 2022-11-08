@@ -1,11 +1,30 @@
-import { useState } from "react";
-import { Alert, Card, Button, Form, Input, message } from "antd";
-import { BrowserRouter as Router, useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import {
+  Alert,
+  Card,
+  Col,
+  Row,
+  Button,
+  Form,
+  Input,
+  message,
+  Select,
+} from "antd";
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  Link,
+  useNavigate,
+  useLocation,
+} from "react-router-dom";
 
-const api = require("../../utils/api");
+const apiUsers = require("../../../utils/api/users");
+const { Option } = Select;
 
-const Register = () => {
+function UsersEdit() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [modalText, setModalText] = useState("Content of the modal");
@@ -19,25 +38,27 @@ const Register = () => {
     message.error("This is an error message");
   };
 
+  const handleOk = () => {
+    setModalText("The modal will be closed after two seconds");
+    setConfirmLoading(true);
+    setTimeout(() => {
+      // setRegisterOpen(false);
+      setConfirmLoading(false);
+    }, 2000);
+  };
+
   const onSubmit = async (data: any) => {
     const payload = {
+      id: location.state.id,
       firstName: data.firstName,
       lastName: data.lastName,
       email: data.email,
-      password: data.password,
-      roleId: 2,
-      active: false,
+      roleId: data.roleId,
+      active: location.state.active,
     };
-
-    // setLoading(true);
-    let res = await api.registerUser(payload);
+    let res = await apiUsers.updateUser(payload);
     if (res) {
-      setConfirmLoading(true);
-      setTimeout(() => {
-        message.success("Successfully Registered!");
-        setConfirmLoading(false);
-        navigate("/register/success");
-      }, 2000);
+      navigate("/manage/users");
     }
     return;
   };
@@ -45,6 +66,7 @@ const Register = () => {
   const onFinishFailed = (errorInfo: any) => {
     console.log("Failed:", errorInfo);
   };
+
   return (
     <Card
       size="small"
@@ -75,7 +97,7 @@ const Register = () => {
             color: "#ffff",
           }}
         >
-          REGISTER
+          Edit User
         </h1>
         <Form
           name="basic"
@@ -89,6 +111,7 @@ const Register = () => {
             label={<span style={{ color: "#c5c5c5" }}>First Name</span>}
             name="firstName"
             hasFeedback
+            initialValue={location.state.firstName}
             rules={[
               {
                 required: true,
@@ -102,6 +125,7 @@ const Register = () => {
             label={<span style={{ color: "#c5c5c5" }}>Last Name</span>}
             name="lastName"
             hasFeedback
+            initialValue={location.state.lastName}
             rules={[
               {
                 required: true,
@@ -122,13 +146,14 @@ const Register = () => {
                 message: "Email is required!",
               },
             ]}
+            initialValue={location.state.email}
           >
             <Input />
           </Form.Item>
 
           <Form.Item
-            label={<span style={{ color: "#c5c5c5" }}>Password</span>}
-            name="password"
+            label={<span style={{ color: "#c5c5c5" }}>Change Role</span>}
+            name="roleId"
             hasFeedback
             rules={[
               {
@@ -136,42 +161,22 @@ const Register = () => {
                 message: "Password is required!",
               },
             ]}
+            initialValue={location.state.roleId}
           >
-            <Input.Password />
-          </Form.Item>
-          <Form.Item
-            label={<span style={{ color: "#c5c5c5" }}>Confirm Password</span>}
-            dependencies={["password"]}
-            hasFeedback
-            name="confirmPassword"
-            rules={[
-              {
-                required: true,
-                message: "Confirm password is required!",
-              },
-              ({ getFieldValue }) => ({
-                validator(_, value) {
-                  if (!value || getFieldValue("password") === value) {
-                    return Promise.resolve();
-                  }
-                  return Promise.reject(
-                    new Error("Please try again, password does not math!")
-                  );
-                },
-              }),
-            ]}
-          >
-            <Input.Password />
+            <Select placeholder="CHANGE YOUR ROLE">
+              <Option value={1}>ADMIN USER</Option>
+              <Option value={2}>NORMAL USER</Option>
+            </Select>
           </Form.Item>
           <Form.Item wrapperCol={{ offset: 8, span: 10 }}>
-            <Button loading={confirmLoading} type="primary" htmlType="submit">
-              Register
+            <Button type="primary" htmlType="submit">
+              Update
             </Button>
           </Form.Item>
         </Form>
       </Card>
     </Card>
   );
-};
+}
 
-export default Register;
+export default UsersEdit;

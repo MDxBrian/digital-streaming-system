@@ -43,3 +43,15 @@ export const deleteActors = (key: string) => {
       throw err;
     });
 };
+
+
+export const updateMovieDetails = (payload: any) => {
+  return axios
+    .put(`http://localhost:3000/actors/${payload.id}`, payload)
+    .then((res) => {
+      if (res.status === 204) return true;
+    })
+    .catch((err) => {
+      throw err;
+    });
+};

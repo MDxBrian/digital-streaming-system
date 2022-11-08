@@ -1,115 +1,135 @@
-import React, { useEffect, useState } from 'react'
-import { Form, Rate, Image, Card, Table, Popconfirm } from "antd";
+import React, { useEffect, useState } from "react";
+import { Tag, Rate, Image, Card, Table, Popconfirm, Button } from "antd";
 import type { ColumnsType } from "antd/es/table";
 
-
 interface DataType {
-    key: React.Key;
-    id: string;
-    title: string;
-    imageUrl: any;
-    budgetCost: number;
-    yearOfRelease: string;
-    runningTime: string;
-    director: string;
-    description: string;
-    ratingAvg: any
-    actorsId: string[];
-  }
-  
-const MoviesReview = () => {
+  key: React.Key;
+  id: string;
+  title: string;
+  imageUrl: any;
+  budgetCost: number;
+  yearOfRelease: string;
+  runningTime: string;
+  director: string;
+  description: string;
+  ratingAvg: any;
+  actorsId: string[];
+}
 
-    
-  const [movieList, setMovieList] = useState([]);
+const apiReviewers = require("../../../utils/api/reviewers");
+
+const MoviesReview = () => {
+  const [reviewList, setReviewList] = useState([]);
 
   useEffect(() => {
     fetch();
   }, []);
 
-  const fetch = async () => {
-    // let res = await apiMovies.getAllMovies();
-    // setMovieList(res);
-  };
-
-  const data:any =[];
-    
   const columns: ColumnsType<DataType> = [
     {
       title: "Title",
-      dataIndex: "imageUrl",
-      key: "imageUrl",
-      align: "center",
-    },
-    {
-      title: "Description",
       dataIndex: "title",
       key: "title",
       align: "center",
+      render: (data) => {
+        return data;
+      },
+      width: 250,
+    },
+    {
+      title: "Description",
+      dataIndex: "content",
+      key: "content",
+      align: "left",
+      width: "40%",
     },
     {
       title: "Posted Date",
-      dataIndex: "director",
-      key: "director",
+      dataIndex: "date",
+      key: "date",
+      width: 150,
       align: "center",
     },
     {
       title: "Rating",
-      dataIndex: "runningTime",
-      key: "runningTime",
+      dataIndex: "rate",
+      key: "rate",
       width: 200,
       align: "center",
+      render: (data) => <Rate disabled value={data} />,
     },
     {
       title: "Status",
-      dataIndex: "budgetCost",
-      key: "budgetCost",
+      dataIndex: "status",
+      key: "status",
       width: 150,
       align: "center",
+      render: (data) => (
+        <Tag color={data === "PENDING" ? "error" : "success"}>{data}</Tag>
+      ),
     },
     {
       title: "Action",
       key: "action",
       width: 200,
       align: "center",
-      render: (record: { key: React.Key }) => (
+      render: (record): any => (
         <>
-          <a> View | </a>
-          <a
-            // onClick={() =>
-            //   navigate("/manage/actors/edit", {
-            //     state: {
-            //       actorId: record.key,
-            //     },
-            //   })
-            // }
-          >
-            {" "} Edit |{" "}
-          </a>
           <Popconfirm
-            title="Sure to delete?"
-            // onConfirm={() => handleDelete(record.key)}
+            title="ARE YOU SURE?"
+            onConfirm={() => handleSubmit(record)}
           >
-            <a> Delete </a>
+            <Button
+              size="small"
+              type="primary"
+              style={{ borderRadius: "10px" }}
+            >
+              {record.status === "PENDING" ? "APPROVED" : "CANCEL"}
+            </Button>
           </Popconfirm>
         </>
       ),
     },
   ];
 
-  return (
+  const fetch = async () => {
+    let res = await apiReviewers.getAllReviewers();
+    setReviewList(res);
+  };
 
-      <Card title="Movie Reviews" size="small" style={{ margin: "25px" }}>
-        {/* <Link to={"/manage/movies/add"} style={{ margin: "4px" }}>
-          Add Movies
-        </Link> */}
+  const handleSubmit = async (data: any) => {
+    let newStatus: string = data.status === "APPROVED" ? "PENDING" : "APPROVED";
+    const payload = {
+      id: data.id,
+      content: data.content,
+      date: data.date,
+      movieId: data.movieId,
+      rate: data.rate,
+      title: data.title,
+      userId: data.userId,
+      status: newStatus,
+    };
+    let res = await apiReviewers.approveReviewer(payload);
+    if (res) fetch();
+  };
+
+  return (
+    <>
+      <Card
+        title="Manage Movies"
+        size="small"
+        style={{ margin: "25px", boxShadow: "10px 10px 5px #dee0e3" }}
+      >
         <Table
-          style={{ marginTop: "4px", }}
+          style={{ marginTop: "4px" }}
           bordered
+          // loading={loading}
           columns={columns}
-          dataSource={data}
+          dataSource={reviewList}
         />
       </Card>
-  )
-}
+    </>
+  );
+};
 
-export default MoviesReview
+export default MoviesReview;

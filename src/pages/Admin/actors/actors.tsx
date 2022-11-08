@@ -37,7 +37,7 @@ const Actors = () => {
     id: actor.id,
     firstName: actor.firstName,
     lastName: actor.lastName,
-    imageUrl: <Image width={27} height={23} src={actor.imageUrl} />,
+    imageUrl: actor.imageUrl,
     gender: actor.gender,
     age: actor.age,
   }));
@@ -49,6 +49,7 @@ const Actors = () => {
       key: "imageUrl",
       width: 50,
       align: "center",
+      render: (data) => <Image width={27} height={23} src={data} />,
     },
     {
       title: "First Name",
@@ -79,14 +80,33 @@ const Actors = () => {
       key: "action",
       align: "center",
       width: 200,
-      render: (record: { key: React.Key }) => (
+      render: (record) => (
         <>
-          <a>View | </a>
+          <a
+            onClick={() =>
+              navigate("/manage/actors/details", {
+                state: {
+                  id: record.key,
+                  imageUrl: record.imageUrl,
+                  firstName: record.firstName,
+                  lastName: record.lastName,
+                  age: record.age,
+                  gender: record.gender,
+                },
+              })
+            }
+          > View | 
+          </a>
           <a
             onClick={() =>
               navigate("/manage/actors/edit", {
                 state: {
-                  actorId: record.key,
+                  id: record.key,
+                  imageUrl: record.imageUrl,
+                  firstName: record.firstName,
+                  lastName: record.lastName,
+                  age: record.age,
+                  gender: record.gender,
                 },
               })
             }
@@ -114,7 +134,11 @@ const Actors = () => {
 
   return (
     <>
-      <Card title="Manage Actors" size="small" style={{ margin: "25px" }}>
+      <Card
+        title="Manage Actors"
+        size="small"
+        style={{ margin: "25px", boxShadow: "10px 10px 5px #dee0e3" }}
+      >
         <Link to={"/manage/actors/add"} style={{ margin: "4px" }}>
           Add Actors
         </Link>
