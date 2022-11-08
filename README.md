@@ -1,4 +1,6 @@
 ![image](https://user-images.githubusercontent.com/56390226/200587161-89376e63-564f-42c0-9a9a-d227e224b058.png)
+![image](https://user-images.githubusercontent.com/56390226/200587349-8ba666ee-ef25-4a39-9517-48a40d44f7ae.png)
+
 
 
 DIGITAL STREAMING SYSTEM 
