@@ -11,7 +11,6 @@ export class Reviews extends Entity {
 
   @property({
     type: 'string',
-    required: true,
   })
   content: string;
 

@@ -11,17 +11,16 @@ export const addMovies = (payload: object) => {
     });
 };
 
-
 export const getMovieDetails = (id: string) => {
-    return axios
-      .get(`http://localhost:3000/movies/${id}`)
-      .then((res) => {
-        return res.data;
-      })
-      .catch((err) => {
-        throw err;
-      });
-  };
+  return axios
+    .get(`http://localhost:3000/movies/${id}`)
+    .then((res) => {
+      return res.data;
+    })
+    .catch((err) => {
+      throw err;
+    });
+};
 
 export const getAllMovies = () => {
   return axios
@@ -34,9 +33,20 @@ export const getAllMovies = () => {
     });
 };
 
-export const deleteMovies = (key: string) => {
+export const deleteMovies = (id: string) => {
   return axios
-    .delete(`http://localhost:3000/movies/${key}`)
+    .delete(`http://localhost:3000/movies/${id}`)
+    .then((res) => {
+      if (res.status === 204) return true;
+    })
+    .catch((err) => {
+      throw err;
+    });
+};
+
+export const updateMovieDetails = (payload: any) => {
+  return axios
+    .put(`http://localhost:3000/movies/${payload.id}`, payload)
     .then((res) => {
       if (res.status === 204) return true;
     })

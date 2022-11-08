@@ -11,7 +11,7 @@ export const addReviewers = (payload: object) => {
     });
 };
 
-export const getAllReviwers = () => {
+export const getAllReviewers = () => {
   return axios
     .get("http://localhost:3000/reviews")
     .then((res) => {
@@ -21,3 +21,14 @@ export const getAllReviwers = () => {
       throw err;
     });
 };
+
+export const approveReviewer = (payload: any) => {
+    return axios
+      .put(`http://localhost:3000/reviews/${payload.id}`, payload)
+      .then((res) => {
+        if (res.status === 204) return true;
+      })
+      .catch((err) => {
+        throw err;
+      });
+  };

@@ -2,9 +2,7 @@ import React, { useEffect, useState } from "react";
 import {
   Form,
   Rate,
-  Image,
   Card,
-  Table,
   Row,
   Col,
   Typography,
@@ -14,14 +12,11 @@ import {
   Button,
   Comment,
   Tooltip,
-  Skeleton,
   Input,
 } from "antd";
-import moment from "moment";
 import { FileAddOutlined } from "@ant-design/icons";
 import { useLocation, useNavigate } from "react-router-dom";
 import Login from "../../login/login";
-import Register from "../../login/register";
 
 var arrColor = [
   "crimson",
@@ -38,8 +33,8 @@ const apiActors = require("../../../utils/api/actors");
 const apiMovies = require("../../../utils/api/movies");
 const apiUsers = require("../../../utils/api/users");
 const apiReviewers = require("../../../utils/api/reviewers");
+const common = require("../../../utils/common");
 
-const { Meta } = Card;
 const { Paragraph, Text } = Typography;
 const { TextArea } = Input;
 interface DataType {
@@ -48,26 +43,11 @@ interface DataType {
   firstName: string;
   lastName: string;
   title: string;
-}
-interface DataType {
-  gender?: string;
-  name: {
-    title?: string;
-    first?: string;
-    last?: string;
-  };
-  email?: string;
-  picture: {
-    large?: string;
-    medium?: string;
-    thumbnail?: string;
-  };
-  nat?: string;
-  loading: boolean;
+  age: string;
+  gender: string;
 }
 
 interface DataType {
-  id?: string;
   date: string;
   content: string;
   rate: number;
@@ -76,14 +56,6 @@ interface DataType {
   fullName: string;
 }
 
-const count = 3;
-const fakeDataUrl = `https://randomuser.me/api/?results=${count}&inc=name,gender,email,nat,picture&noinfo`;
-interface CommentItem {
-  author: string;
-  avatar: string;
-  content: React.ReactNode;
-  datetime: string;
-}
 interface EditorProps {
   onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   onSubmit: () => void;
@@ -119,19 +91,27 @@ const Editor = ({ onChange, onSubmit, submitting, value }: EditorProps) => (
   </>
 );
 
+interface DataType {
+  key: React.Key;
+  id: string;
+  title: string;
+  imageUrl: string;
+  yearOfRelease: string;
+  runningTime: string;
+  director: string;
+  budgetCost: string;
+  description: string;
+  ratingAvg: any;
+  actorsId: string[];
+}
+
 const MovieDetails = (props: any) => {
-  const location = useLocation();
   const navigate = useNavigate();
+  const location = useLocation();
   const [visibleReviewerDetails, setVibileReviewerDetails] = useState(false);
 
   const [ellipsis, setEllipsis] = useState(true);
-  const [image, setImage] = useState("");
   const [actorList, setActorList]: any = useState([]);
-
-  const [initLoading, setInitLoading] = useState(true);
-  const [loading, setLoading] = useState(false);
-  const [data, setData] = useState<DataType[]>([]);
-  const [list, setList] = useState<DataType[]>([]);
 
   const [myReviews, setMyReviews]: any = useState([]);
   const [getAllReviewDetails, setGetAllReviewDetails]: any = useState([]);
@@ -139,47 +119,7 @@ const MovieDetails = (props: any) => {
   useEffect(() => {
     fetchActorsImages();
     fetchReviewers();
-    fetch(fakeDataUrl)
-      .then((res) => res.json())
-      .then((res) => {
-        setInitLoading(false);
-        setData(res.results);
-        setList(res.results);
-      });
   }, []);
-
-  const onLoadMore = () => {
-    setLoading(true);
-    // setList(
-    //     // data.concat([...new Array(count)].map(() => ({ loading: true, name: {}, picture: {} }))),
-    //   );
-    fetch(fakeDataUrl)
-      .then((res) => res.json())
-      .then((res) => {
-        const newData = data.concat(res.results);
-        setData(newData);
-        setList(newData);
-        setLoading(false);
-        // Resetting window's offsetTop so as to display react-virtualized demo underfloor.
-        // In real scene, you can using public method of react-virtualized:
-        // https://stackoverflow.com/questions/46700726/how-to-use-public-method-updateposition-of-react-virtualized
-        window.dispatchEvent(new Event("resize"));
-      });
-  };
-
-  const loadMore =
-    !initLoading && !loading ? (
-      <div
-        style={{
-          textAlign: "center",
-          marginTop: 12,
-          height: 32,
-          lineHeight: "32px",
-        }}
-      >
-        <Button onClick={onLoadMore}>loading more</Button>
-      </div>
-    ) : null;
 
   const fetchActorsImages = async () => {
     let res = await apiMovies.getMovieDetails(location.state.id);
@@ -197,6 +137,10 @@ const MovieDetails = (props: any) => {
     title: val.title,
     imageUrl: val.imageUrl,
     fullname: val.firstName + " " + val.lastName,
+    firstName: val.firstName,
+    lastName: val.lastName,
+    age: val.age,
+    gender: val.gender,
   }));
 
   const getInitialName = async (data: string) => {
@@ -204,19 +148,20 @@ const MovieDetails = (props: any) => {
     return details.firstName.charAt(0) + details.lastName.charAt(0);
   };
 
+  const [ratingPercentage, setRatingPercentage] = useState(0);
   const fetchReviewers = async () => {
     let userId = await apiUsers.getWhoAmI(sessionStorage.getItem("token"));
-    let res = await apiReviewers.getAllReviwers();
+    let res = await apiReviewers.getAllReviewers();
     const reviewersList: string[] = res;
     let newObj: any[] = [];
     let newObjAll: any[] = [];
     reviewersList.map(async (data: any) => {
       if (data.userId == userId && data.movieId == location.state.id) {
         newObj.push(data);
+        setMyReviews(newObj);
       }
       if (data.movieId == location.state.id) {
         const initialName: string = await getInitialName(data.userId);
-        console.log(initialName);
         newObjAll.push({
           id: data.id,
           date: data.date,
@@ -226,10 +171,11 @@ const MovieDetails = (props: any) => {
           userId: data.userId,
           initialName: initialName,
         });
+        setGetAllReviewDetails(newObjAll);
+        const avgRating = common.ratingAvg(newObjAll);
+        setRatingPercentage(avgRating);
       }
     });
-    setMyReviews(newObj);
-    setGetAllReviewDetails(newObjAll);
   };
 
   const dataAllReviewers = getAllReviewDetails.map((val: DataType) => ({
@@ -242,11 +188,9 @@ const MovieDetails = (props: any) => {
     fullName: val.fullName,
   }));
 
-  const [comments, setComments] = useState<CommentItem[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [value, setValue] = useState("");
   const [openLoginModal, setOpenLoginModal] = useState(false);
-  const [openRegisterModal, setOpenRegisterModal] = useState(false);
 
   const handleSubmit = async () => {
     const payload = {
@@ -258,6 +202,7 @@ const MovieDetails = (props: any) => {
       status: "PENDING",
       userId: props.userId,
       movieId: location.state.id,
+      title: location.state.title,
     };
     let res = await apiReviewers.addReviewers(payload);
     if (res) {
@@ -350,15 +295,18 @@ const MovieDetails = (props: any) => {
                     <br />
                     <span style={{ color: "white" }}>Budget Cost: </span>
                     <span style={{ color: "#c5c5c5" }}>
-                      {location.state.budgetCost}:
+                      {`$ ${location.state.budgetCost}`.replace(
+                        /\B(?=(\d{3})+(?!\d))/g,
+                        ","
+                      )}
                     </span>
                   </p>
                 </Col>
                 <Col span={5}>
                   <span style={{ color: "white" }}>Rating Avg: </span>
                   <span style={{ color: "#c5c5c5" }}>
-                    7.85 | 9 votes
-                    <Rate allowHalf defaultValue={3.7} disabled />
+                    {ratingPercentage}/5 | {getAllReviewDetails.length}votes
+                    <Rate allowHalf value={ratingPercentage} disabled />
                   </span>
                 </Col>
               </Row>
@@ -372,6 +320,18 @@ const MovieDetails = (props: any) => {
                     <List.Item>
                       <Card
                         style={{ width: 100, height: 100, borderRadius: "7px" }}
+                        onClick={() =>
+                          navigate("/manage/actors/details", {
+                            state: {
+                              id: item.id,
+                              imageUrl: item.imageUrl,
+                              firstName: item.firstName,
+                              lastName: item.lastName,
+                              age: item.age,
+                              gender: item.gender,
+                            },
+                          })
+                        }
                         cover={
                           <img
                             style={{

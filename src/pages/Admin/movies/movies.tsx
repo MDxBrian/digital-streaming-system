@@ -1,11 +1,12 @@
 import { Form, Rate, Image, Card, Table, Popconfirm } from "antd";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import type { ColumnsType } from "antd/es/table";
 import "./movies.scss";
-import MoviesAdd from "./moviesAdd";
+import LoaderContext from "../../../context/LoaderContext";
 
 const apiMovies = require("../../../utils/api/movies");
+const apiReviews = require("../../../utils/api/reviewers");
 
 interface DataType {
   key: React.Key;
@@ -17,7 +18,8 @@ interface DataType {
   runningTime: string;
   director: string;
   description: string;
-  ratingAvg: any
+  ratingAvg: any;
+  votes: string;
   actorsId: string[];
 }
 
@@ -25,28 +27,57 @@ const Movies = () => {
   const navigate = useNavigate();
   const [movieList, setMovieList] = useState([]);
 
+  const { loading, setLoading } = useContext(LoaderContext);
+
   useEffect(() => {
     fetch();
   }, []);
 
   const fetch = async () => {
+    setLoading(true);
     let res = await apiMovies.getAllMovies();
-    setMovieList(res);
+    const resAllReviewers = await apiReviews.getAllReviewers();
+    let newObj: any = [];
+    res.map(async (movies: DataType) => {
+      let newObjReviewer: any = [];
+      let num = 0;
+      let total = 0;
+      resAllReviewers.map((val: any) => {
+        if (val.movieId === movies.id) {
+          total += 1;
+          newObjReviewer.push(val.rate);
+        }
+      });
+      const sum: number = newObjReviewer.map((val: number) => val + num);
+      const rtnAvg = sum / newObjReviewer.length;
+      const rating = rtnAvg ? rtnAvg : 0;
+      newObj.push({
+        key: movies.id,
+        id: movies.id,
+        title: movies.title,
+        imageUrl: movies.imageUrl,
+        // imageUrl: <Image width={27} height={23} src={movies.imageUrl} />,
+        budgetCost: movies.budgetCost,
+
+        yearOfRelease: movies.yearOfRelease,
+        runningTime: movies.runningTime,
+        director: movies.director,
+        description: movies.description,
+        actorsId: movies.actorsId,
+        ratingAvg: rating,
+        votes: newObjReviewer.length,
+        // ratingAvg: (
+        //   <span>
+        //     <Rate disabled allowHalf value={rating} />
+        //     <small> &nbsp; {total} votes </small>
+        //   </span>
+        // ),
+      });
+      setMovieList(newObj);
+    });
+    setLoading(false);
   };
 
-  const data = movieList.map((movies: DataType) => ({
-    key: movies.id,
-    id: movies.id,
-    title: movies.title,
-    imageUrl: <Image width={27} height={23} src={movies.imageUrl} />,
-    budgetCost: movies.budgetCost,
-    yearOfRelease: movies.yearOfRelease,
-    runningTime: movies.runningTime,
-    director: movies.director,
-    description: movies.description,
-    actorsId: movies.actorsId,
-    ratingAvg:  <Rate disabled defaultValue={2} />
-  }));
   const columns: ColumnsType<DataType> = [
     {
       title: "Image",
@@ -80,6 +111,7 @@ const Movies = () => {
       key: "budgetCost",
       width: 150,
       align: "center",
+      render: (record) => `$ ${record}`.replace(/\B(?=(\d{3})+(?!\d))/g, ","),
     },
     {
       title: "Year of Release",
@@ -92,7 +124,7 @@ const Movies = () => {
       title: "Rating Avg%",
       dataIndex: "ratingAvg",
       key: "ratingAvg",
-      width: 200,
+      width: 250,
       align: "center",
     },
     {
@@ -100,19 +132,44 @@ const Movies = () => {
       key: "action",
       width: 200,
       align: "center",
-      render: (record: { key: React.Key }) => (
+      render: (record): any => (
         <>
-          <a> View | </a>
           <a
             onClick={() =>
-              navigate("/manage/actors/edit", {
+              navigate("/manage/movies/details", {
                 state: {
-                  actorId: record.key,
+                  id: record.id,
+                  title: record.title,
+                  imageUrl: record.imageUrl.props.src,
+                  director: record.director,
+                  budgetCost: record.budgetCost,
+                  description: record.description,
+                  duration: record.runningTime,
+                  yearOfRelease: record.yearOfRelease,
                 },
               })
             }
           >
-            {" "} Edit |{" "}
+            View |
+          </a>
+          <a
+            onClick={() =>
+              navigate("/manage/movies/edit", {
+                state: {
+                  id: record.id,
+                  title: record.title,
+                  imageUrl: record.imageUrl.props.src,
+                  budgetCost: record.budgetCost,
+                  yearOfRelease: record.yearOfRelease,
+                  runningTime: record.runningTime,
+                  director: record.director,
+                  description: record.description,
+                  actorsId: record.actorsId,
+                },
+              })
+            }
+          >
+            &nbsp; Edit |&nbsp;
           </a>
           <Popconfirm
             title="Sure to delete?"
@@ -132,17 +189,44 @@ const Movies = () => {
     // return setLoading(false);
   };
 
+  const dataAllMovies = movieList.map((val: DataType) => ({
+    key: val.id,
+    id: val.id,
+    title: val.title,
+    // imageUrl: val.imageUrl,
+    imageUrl: <Image width={27} height={23} src={val.imageUrl} />,
+    budgetCost: val.budgetCost,
+    yearOfRelease: val.yearOfRelease,
+    runningTime: val.runningTime,
+    director: val.director,
+    description: val.description,
+    actorsId: val.actorsId,
+    votes: val.votes,
+    // ratingAvg: val.ratingAvg
+    ratingAvg: (
+      <span>
+        <Rate disabled allowHalf value={val.ratingAvg} />
+        <small> &nbsp; {val.votes} votes </small>
+      </span>
+    ),
+  }));
+
   return (
     <>
-      <Card title="Manage Movies" size="small" style={{ margin: "25px" }}>
+      <Card
+        title="Manage Movies"
+        size="small"
+        style={{ margin: "25px", boxShadow: "10px 10px 5px #dee0e3" }}
+      >
         <Link to={"/manage/movies/add"} style={{ margin: "4px" }}>
           Add Movies
         </Link>
         <Table
           style={{ marginTop: "4px" }}
           bordered
+          loading={loading}
           columns={columns}
-          dataSource={data}
+          dataSource={dataAllMovies}
         />
       </Card>
     </>

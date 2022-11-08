@@ -45,6 +45,10 @@ import RegisterSuccess from "./pages/login/registerSuccess";
 import PrivateRoute from "./pages/privateRoute";
 
 import { DownOutlined, UserOutlined } from "@ant-design/icons";
+import MoviesEdit from "./pages/admin/movies/moviesEdit";
+import ActorDetails from "./pages/admin/actors/actorDetails";
+import Users from "./pages/admin/users/users";
+import UsersEdit from "./pages/admin/users/usersEdit";
 
 const utils = require("./utils/common");
 const apiUsers = require("./utils/api/users");
@@ -144,7 +148,7 @@ const App: React.FC = () => {
       setIsVisibileAvatar(false);
     }
     const details = await apiUsers.getUserDetails(res);
-    setUserId(details.id)
+    setUserId(details.id);
     setName(details.firstName.charAt(0) + details.lastName.charAt(0));
     setIsVisibileAvatar(true);
     setIsVisibleSiginInButton(false);
@@ -252,27 +256,23 @@ const App: React.FC = () => {
             <Routes>
               <Route path="/" element={<AdminHome />} />
               <Route path="/register" element={<Register />} />
-
               <Route
                 path="/manage/movies/details"
                 element={<MovieDetails roleId={roleId} userId={userId} />}
               />
-              <Route
-                path="register/success"
-                element={<RegisterSuccess />}
-              ></Route>
-              <Route  path="*" element={<AdminHome />} />
+              <Route path="register/success" element={<RegisterSuccess />} />
+              <Route path="*" element={<AdminHome />} />
+              <Route path="/manage/actors/details" element={<ActorDetails />} />
               <Route element={<PrivateRoute />}>
-                <Route path="/manage/users" element={<ActorsEdit />} />
                 <Route path="/manage/movies" element={<Movies />} />
                 <Route path="/manage/movies/add" element={<MoviesAdd />} />
-                <Route
-                  path="/manage/movies/review"
-                  element={<MoviesReview />}
-                />
+                <Route path="/manage/movies/edit" element={<MoviesEdit />} />
+                <Route path="/manage/movies/review" element={<MoviesReview />} />
                 <Route path="/manage/actors" element={<Actors />} />
                 <Route path="/manage/actors/add" element={<ActorsAdd />} />
                 <Route path="/manage/actors/edit" element={<ActorsEdit />} />
+                <Route path="/manage/users" element={<Users />} />
+                <Route path="/manage/users/edit" element={<UsersEdit />} />
               </Route>
             </Routes>
           </Content>

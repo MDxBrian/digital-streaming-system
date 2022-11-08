@@ -1,14 +1,10 @@
-import React, { useState } from "react";
-import { Layout, Modal, Col, Row, Button, Form, Input, Checkbox } from "antd";
+import { useState } from "react";
+import { message, Modal, Button, Form, Input, Checkbox } from "antd";
 import type { CheckboxChangeEvent } from "antd/es/checkbox";
 import {
   BrowserRouter as Router,
-  Route,
-  Routes,
   Link,
-  useNavigate,
 } from "react-router-dom";
-import Register from "./register";
 
 export interface IModalProps {
   open: any;
@@ -18,40 +14,26 @@ export interface IModalProps {
 const api = require("../../utils/api");
 
 function Login({ open, setOpen }: IModalProps) {
-  const navigate = useNavigate();
-
-  const [registerOpen, setRegisterOpen] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
-  const [modalText, setModalText] = useState("Content of the modal");
-  const [loading, setLoading] = useState(false);
   const [checked, setChecked] = useState(false);
-  const showRegisterModal = () => {
-    setRegisterOpen(true);
-  };
 
   const onFinish = async (data: any) => {
-    console.log("Success:", data);
-
     const payload = {
       email: data.email,
       password: data.password,
       remember: checked,
     };
-
-    setLoading(true);
     let res = await api.login(payload);
     if (res) {
-      window.location.reload();
+      setConfirmLoading(true);
+      message.success("Successfully Login!");
+      setTimeout(() => {
+        setConfirmLoading(false);
+        return window.location.reload();
+      }, 1000);
+    } else {
+      return message.error("Login Failed");
     }
-    return setLoading(false);
-  };
-
-  const onFinishFailed = (errorInfo: any) => {
-    console.log("Failed:", errorInfo);
-  };
-
-  const toggleChecked = () => {
-    setChecked(!checked);
   };
 
   const onChange = (e: CheckboxChangeEvent) => {
@@ -82,12 +64,12 @@ function Login({ open, setOpen }: IModalProps) {
           labelCol={{ span: 8 }}
           wrapperCol={{ span: 12 }}
           onFinish={onFinish}
-          onFinishFailed={onFinishFailed}
           autoComplete="off"
         >
           <Form.Item
             label="Email"
             name="email"
+            hasFeedback
             rules={[
               {
                 required: true,
@@ -102,6 +84,7 @@ function Login({ open, setOpen }: IModalProps) {
           <Form.Item
             label="Password"
             name="password"
+            hasFeedback
             rules={[
               {
                 required: true,
@@ -120,7 +103,12 @@ function Login({ open, setOpen }: IModalProps) {
             <Checkbox checked={checked} onChange={onChange}>
               Remember me
             </Checkbox>
-            <Button type="primary" htmlType="submit" style={{ float: "right" }}>
+            <Button
+              loading={confirmLoading}
+              type="primary"
+              htmlType="submit"
+              style={{ float: "right" }}
+            >
               LOGIN
             </Button>
           </Form.Item>
