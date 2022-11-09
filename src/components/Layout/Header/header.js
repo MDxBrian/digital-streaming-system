@@ -1,7 +1,4 @@
-import { useContext, useEffect, useState } from "react";
-import { Dropdown, Row, Col, Button, Menu, Modal, Radio } from "antd";
-import menuIcon from "../../../assets/images/headers/menu.png";
-import { SettingFilled } from "@ant-design/icons";
+
 import "./header.css";
 const Header = () => {
   return (

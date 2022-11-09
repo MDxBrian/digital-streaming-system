@@ -2,16 +2,7 @@ import { useEffect, useState } from "react";
 import { SideMenuData } from "./sideMenuData";
 import { useNavigate, useLocation } from "react-router-dom";
 import "./sideMenu.css";
-import {
-  DesktopOutlined,
-  FileOutlined,
-  PieChartOutlined,
-  TeamOutlined,
-  UserOutlined,
-} from "@ant-design/icons";
 import { Layout, Menu } from "antd";
-import logo from "../../../assets/images/logo.jpg";
-
 const { Sider } = Layout;
 
 const SideMenu = () => {
@@ -35,7 +26,7 @@ const SideMenu = () => {
           }
         });
       }
-      return {};
+      return;
     });
   };
 

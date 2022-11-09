@@ -128,7 +128,7 @@ const MovieDetails = (props: any) => {
     actorsId.map(async (data: any) => {
       let res = await apiActors.getActorDetails(data);
       newObj.push(res);
-      setActorList(newObj);
+      return setActorList(newObj);
     });
   };
 
@@ -293,6 +293,11 @@ const MovieDetails = (props: any) => {
                       {location.state.duration}
                     </span>
                     <br />
+                    <span style={{ color: "white" }}>Year Release: </span>
+                    <span style={{ color: "#c5c5c5" }}>
+                      {location.state.yearOfRelease}
+                    </span>
+                    <br />
                     <span style={{ color: "white" }}>Budget Cost: </span>
                     <span style={{ color: "#c5c5c5" }}>
                       {`$ ${location.state.budgetCost}`.replace(
@@ -305,7 +310,7 @@ const MovieDetails = (props: any) => {
                 <Col span={5}>
                   <span style={{ color: "white" }}>Rating Avg: </span>
                   <span style={{ color: "#c5c5c5" }}>
-                    {ratingPercentage}/5 | {getAllReviewDetails.length}votes
+                    {ratingPercentage}/5 | {getAllReviewDetails.length} votes
                     <Rate allowHalf value={ratingPercentage} disabled />
                   </span>
                 </Col>
@@ -439,10 +444,6 @@ const MovieDetails = (props: any) => {
               </Col>
             </Col>
             <Col span={6} pull={18}>
-              <Badge.Ribbon
-                style={{ marginTop: "5px" }}
-                text={location.state.yearOfRelease}
-              >
                 <img
                   src={location.state.imageUrl}
                   style={{
@@ -453,7 +454,6 @@ const MovieDetails = (props: any) => {
                     boxShadow: "10px 10px 5px black",
                   }}
                 />
-              </Badge.Ribbon>
             </Col>
           </Row>
         </Card>

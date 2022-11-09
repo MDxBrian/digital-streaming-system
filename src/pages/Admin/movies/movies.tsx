@@ -1,9 +1,12 @@
-import { Form, Rate, Image, Card, Table, Popconfirm } from "antd";
+import { Rate, Image, Card, Table, Popconfirm } from "antd";
 import React, { useEffect, useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import type { ColumnsType } from "antd/es/table";
 import "./movies.scss";
 import LoaderContext from "../../../context/LoaderContext";
+
+import { useAppDispatch } from "../../../redux/store/hooks";
+import { removeMovies } from "../../../redux/actions/movies";
 
 const apiMovies = require("../../../utils/api/movies");
 const apiReviews = require("../../../utils/api/reviewers");
@@ -24,6 +27,7 @@ interface DataType {
 }
 
 const Movies = () => {
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const [movieList, setMovieList] = useState([]);
 
@@ -56,9 +60,7 @@ const Movies = () => {
         id: movies.id,
         title: movies.title,
         imageUrl: movies.imageUrl,
-        // imageUrl: <Image width={27} height={23} src={movies.imageUrl} />,
         budgetCost: movies.budgetCost,
-
         yearOfRelease: movies.yearOfRelease,
         runningTime: movies.runningTime,
         director: movies.director,
@@ -66,12 +68,6 @@ const Movies = () => {
         actorsId: movies.actorsId,
         ratingAvg: rating,
         votes: newObjReviewer.length,
-        // ratingAvg: (
-        //   <span>
-        //     <Rate disabled allowHalf value={rating} />
-        //     <small> &nbsp; {total} votes </small>
-        //   </span>
-        // ),
       });
       setMovieList(newObj);
     });
@@ -118,13 +114,6 @@ const Movies = () => {
       dataIndex: "yearOfRelease",
       key: "yearOfRelease",
       width: 150,
-      align: "center",
-    },
-    {
-      title: "Rating Avg%",
-      dataIndex: "ratingAvg",
-      key: "ratingAvg",
-      width: 250,
       align: "center",
     },
     {
@@ -182,18 +171,16 @@ const Movies = () => {
     },
   ];
 
-  const handleDelete = async (key: React.Key) => {
-    // setLoading(true);
+  const handleDelete = async (key: string) => {
+    dispatch(removeMovies(key));
     let res = await apiMovies.deleteMovies(key);
     if (res) fetch();
-    // return setLoading(false);
   };
 
   const dataAllMovies = movieList.map((val: DataType) => ({
     key: val.id,
     id: val.id,
     title: val.title,
-    // imageUrl: val.imageUrl,
     imageUrl: <Image width={27} height={23} src={val.imageUrl} />,
     budgetCost: val.budgetCost,
     yearOfRelease: val.yearOfRelease,
@@ -202,7 +189,6 @@ const Movies = () => {
     description: val.description,
     actorsId: val.actorsId,
     votes: val.votes,
-    // ratingAvg: val.ratingAvg
     ratingAvg: (
       <span>
         <Rate disabled allowHalf value={val.ratingAvg} />
