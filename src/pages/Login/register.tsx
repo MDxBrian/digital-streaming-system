@@ -8,17 +8,6 @@ const Register = () => {
   const navigate = useNavigate();
 
   const [confirmLoading, setConfirmLoading] = useState(false);
-  const [modalText, setModalText] = useState("Content of the modal");
-  const [loading, setLoading] = useState(false);
-
-  const success = () => {
-    message.success("Successfully Registed!");
-  };
-
-  const error = () => {
-    message.error("This is an error message");
-  };
-
   const onSubmit = async (data: any) => {
     const payload = {
       firstName: data.firstName,

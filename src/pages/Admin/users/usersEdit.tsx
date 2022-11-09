@@ -168,6 +168,23 @@ function UsersEdit() {
               <Option value={2}>NORMAL USER</Option>
             </Select>
           </Form.Item>
+          <Form.Item
+            label={<span style={{ color: "#c5c5c5" }}>Is Active?</span>}
+            name="active"
+            hasFeedback
+            rules={[
+              {
+                required: true,
+                message: "Active/Inactive is required!",
+              },
+            ]}
+            initialValue={location.state.active}
+          >
+            <Select placeholder="CHANGE YOUR ROLE">
+              <Option value={true}>ACTIVE</Option>
+              <Option value={false}>INACTIVE</Option>
+            </Select>
+          </Form.Item>
           <Form.Item wrapperCol={{ offset: 8, span: 10 }}>
             <Button type="primary" htmlType="submit">
               Update

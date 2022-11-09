@@ -1,13 +1,16 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Card, List, Badge } from "antd";
+import { Card, List, Badge, Space, Input } from "antd";
 import Login from "../login/login";
 import { useNavigate } from "react-router-dom";
 import LoaderContext from "../../context/LoaderContext";
 import Loader from "../../components/Loader/Loader";
 
-const apiMovies = require("../../utils/api/movies");
+import { useAppDispatch, useAppSelector } from "../../redux/store/hooks";
+import { startSetMovies } from "../../redux/actions/movies";
+import { startSetActors } from "../../redux/actions/actors";
 
 const { Meta } = Card;
+const { Search } = Input;
 
 interface DataType {
   key: React.Key;
@@ -25,38 +28,40 @@ interface DataType {
 
 function AdminHome() {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+
+  const moviesData = useAppSelector((state) => state.movies);
+  const actorsData = useAppSelector((state) => state.actors);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(16);
-
-  const [movieList, setMovieList] = useState([]);
   const [open, setOpen] = useState(false);
-
-  const { loading, setLoading } = useContext(LoaderContext);
+  const { loading } = useContext(LoaderContext);
 
   useEffect(() => {
     fetch();
   }, []);
 
-  const fetch = async () => {
-    setLoading(true);
-    let res = await apiMovies.getAllMovies();
-    setMovieList(res);
-    setLoading(false);
+  const fetch = () => {
+    dispatch(startSetActors());
+    dispatch(startSetMovies());
   };
 
-  const data = movieList.map((movies: DataType) => ({
-    key: movies.id,
-    id: movies.id,
-    title: movies.title,
-    imageUrl: movies.imageUrl,
-    yearOfRelease: movies.yearOfRelease,
-    runningTime: movies.runningTime,
-    budgetCost: movies.budgetCost,
-    director: movies.director,
-    description: movies.description,
-    ratingAvg: movies.ratingAvg,
-    actorsId: movies.actorsId,
-  }));
+  const [searchTerm, setSearchTerm] = useState("");
+  const [movies, setMovies]: any = useState([]);
+  const [actors, setActors]: any = useState([]);
+  const onSearch = (value: string) => {
+    setSearchTerm(value);
+    setMovies(
+      moviesData.filter((data) => data.title.toLowerCase().includes(value))
+    );
+    setActors(
+      actorsData.filter(
+        (data) =>
+          data.firstName.toLowerCase().includes(value) ||
+          data.lastName.toLowerCase().includes(value)
+      )
+    );
+  };
 
   return (
     <Loader>
@@ -73,14 +78,110 @@ function AdminHome() {
           borderRadius: "10px",
           boxShadow: "10px 10px 5px #dee0e3",
         }}
-        // extra={<a href="#">See more</a>
+        extra={
+          <Space direction="vertical">
+            <Search
+              placeholder="Search movies and actors..."
+              onChange={(e) => onSearch(e.target.value)}
+              style={{ width: 304 }}
+              allowClear
+              enterButton
+            />
+          </Space>
+        }
       >
         <List
           grid={{ gutter: 16, column: 8 }}
-          dataSource={data}
-          renderItem={(item) => (
+          dataSource={searchTerm ? movies : moviesData}
+          renderItem={(item: any) => (
             <List.Item>
-              <Badge.Ribbon text={item.yearOfRelease}>
+              <Card
+                hoverable
+                style={{ width: 190 }}
+                cover={
+                  <img
+                    style={{
+                      padding: "3px",
+                      borderRadius: "2px",
+                      width: 190,
+                      height: 250,
+                    }}
+                    alt="example"
+                    src={item.imageUrl}
+                  />
+                }
+                onClick={async () => {
+                  navigate("/manage/movies/details", {
+                    state: {
+                      id: item.id,
+                      title: item.title,
+                      imageUrl: item.imageUrl,
+                      director: item.director,
+                      budgetCost: item.budgetCost,
+                      description: item.description,
+                      duration: item.runningTime,
+                      yearOfRelease: item.yearOfRelease,
+                    },
+                  });
+                }}
+              >
+                <Badge.Ribbon
+                  text={item.yearOfRelease}
+                  style={{ marginTop: "-261px", marginRight: "-10px" }}
+                >
+                  <Meta
+                    title={
+                      <label style={{ color: "#002140" }}>{item.title}</label>
+                    }
+                  />
+                  <small style={{ color: "#a6aaae" }}>{item.runningTime}</small>
+                </Badge.Ribbon>
+              </Card>
+            </List.Item>
+          )}
+          pagination={{
+            current: page,
+            pageSize: pageSize,
+            onChange: (page, pageSize) => {
+              setPage(page);
+              setPageSize(pageSize);
+            },
+          }}
+        />
+        {open && <Login open={open} setOpen={setOpen} />}
+      </Card>
+
+      {searchTerm && (
+        <Card
+          loading={loading}
+          title={
+            <div style={{ fontWeight: "bolder", color: "#002140" }}>
+              SEARCH ACTORS
+            </div>
+          }
+          size="small"
+          style={{
+            margin: "25px",
+            borderRadius: "10px",
+            boxShadow: "10px 10px 5px #dee0e3",
+          }}
+          extra={
+            <Space direction="vertical">
+              <Search
+                placeholder="Search movies and actors..."
+                onChange={(e) => onSearch(e.target.value)}
+                style={{ width: 304 }}
+                allowClear
+                enterButton
+              />
+            </Space>
+          }
+        >
+          <List
+            grid={{ gutter: 16, column: 8 }}
+            dataSource={searchTerm ? actors : actorsData}
+            renderItem={(item: any) => (
+              <List.Item>
                 <Card
                   hoverable
                   style={{ width: 190 }}
@@ -97,42 +198,29 @@ function AdminHome() {
                     />
                   }
                   onClick={async () => {
-                    navigate("/manage/movies/details", {
+                    navigate("/manage/actors/details", {
                       state: {
                         id: item.id,
-                        title: item.title,
                         imageUrl: item.imageUrl,
-                        director: item.director,
-                        budgetCost: item.budgetCost,
-                        description: item.description,
-                        duration: item.runningTime,
-                        yearOfRelease: item.yearOfRelease,
+                        firstName: item.firstName,
+                        lastName: item.lastName,
+                        age: item.age,
+                        gender: item.gender,
                       },
                     });
                   }}
                 >
-                  <Meta
-                    title={
-                      <label style={{ color: "#002140" }}>{item.title}</label>
-                    }
-                  />
-                  <small style={{ color: "#a6aaae" }}>{item.runningTime}</small>
+                    <Meta
+                      title={
+                        <label style={{ color: "#002140" }}>{`${item.firstName} ${item.lastName}`}</label>
+                      }
+                    />
                 </Card>
-              </Badge.Ribbon>
-            </List.Item>
-          )}
-          pagination={{
-            current: page,
-            pageSize: pageSize,
-            onChange: (page, pageSize) => {
-              setPage(page);
-              setPageSize(pageSize);
-            },
-          }}
-        />
-
-        {open && <Login open={open} setOpen={setOpen} />}
-      </Card>
+              </List.Item>
+            )}
+          />
+        </Card>
+      )}
     </Loader>
   );
 }

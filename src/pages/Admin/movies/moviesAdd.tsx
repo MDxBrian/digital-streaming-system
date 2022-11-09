@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   Form,
   Input,
@@ -8,14 +8,14 @@ import {
   Typography,
   Row,
   Col,
-  Image,
   Select,
-  DatePicker,
   InputNumber,
 } from "antd";
-import type { DatePickerProps, SelectProps } from "antd";
+import type { SelectProps } from "antd";
 import { Link, useNavigate } from "react-router-dom";
-import moment from "moment";
+
+import { useAppDispatch } from "../../../redux/store/hooks";
+import { createMovies } from "../../../redux/actions/movies";
 
 const apiActors = require("../../../utils/api/actors");
 const apiMovies = require("../../../utils/api/movies");
@@ -44,13 +44,10 @@ getActorList();
 
 const MoviesAdd = () => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   const [previewer, setPreviewer] = useState("error");
   const [value, setValue] = useState([]);
-  // const [valueId, setValueId] = useState([]);
-  const [yearRelease, setYearRelease] = useState("");
-
-  // useEffect(() => {}, [options]);
 
   const selectProps: SelectProps = {
     mode: "multiple",
@@ -74,7 +71,7 @@ const MoviesAdd = () => {
       title: values.title,
       imageUrl: values.imageUrl,
       budgetCost: values.cost,
-      yearOfRelease: yearRelease,
+      yearOfRelease: values.yearOfRelease,
       runningTime: values.runningTime,
       director: values.director,
       description: values.description,
@@ -82,13 +79,11 @@ const MoviesAdd = () => {
     };
 
     let res = await apiMovies.addMovies(payload);
+
+    dispatch(createMovies(payload));
     if (res) {
       return navigate("/manage/movies");
     }
-  };
-
-  const onChangeDatePicker: DatePickerProps["onChange"] = (_, dateString) => {
-    setYearRelease(dateString);
   };
 
   return (
@@ -111,6 +106,7 @@ const MoviesAdd = () => {
             <Form.Item
               label="Movie Title"
               name="title"
+              hasFeedback
               rules={[
                 {
                   required: true,
@@ -120,7 +116,7 @@ const MoviesAdd = () => {
             >
               <Input style={{ fontWeight: "bold" }} />
             </Form.Item>
-            <Form.Item label="Choose an Actor" name="actor">
+            <Form.Item label="Choose an Actor" name="actor" hasFeedback>
               <Input.Group compact>
                 <Space direction="vertical" style={{ width: "100%" }}>
                   <Select
@@ -138,6 +134,7 @@ const MoviesAdd = () => {
             <Form.Item
               label="Image URL"
               name="imageUrl"
+              hasFeedback
               rules={[
                 {
                   required: true,
@@ -153,6 +150,7 @@ const MoviesAdd = () => {
               initialValue={0}
               label="Budget Cost"
               name="cost"
+              hasFeedback
               rules={[
                 {
                   required: true,
@@ -172,8 +170,9 @@ const MoviesAdd = () => {
               />
             </Form.Item>
             <Form.Item
+              hasFeedback
               label="Year of Release"
-              name="yearRelease"
+              name="yearOfRelease"
               rules={[
                 {
                   required: true,
@@ -186,6 +185,7 @@ const MoviesAdd = () => {
             <Form.Item
               label="Duration"
               name="runningTime"
+              hasFeedback
               rules={[
                 {
                   required: true,
@@ -198,6 +198,7 @@ const MoviesAdd = () => {
             <Form.Item
               label="Director"
               name="director"
+              hasFeedback
               rules={[
                 {
                   required: true,
@@ -207,7 +208,7 @@ const MoviesAdd = () => {
             >
               <Input />
             </Form.Item>
-            <Form.Item label="Description" name="description">
+            <Form.Item label="Description" name="description" hasFeedback>
               <TextArea
                 rows={4}
                 placeholder="Max character is 500"

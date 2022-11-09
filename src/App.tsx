@@ -1,15 +1,8 @@
-import {
-  DesktopOutlined,
-  FileOutlined,
-  SettingOutlined,
-  LogoutOutlined,
-  TeamOutlined,
-  SearchOutlined,
-} from "@ant-design/icons";
+import { LogoutOutlined, TeamOutlined } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import {
   Layout,
-  Card,
+  Input,
   Col,
   Row,
   Button,
@@ -52,7 +45,7 @@ import UsersEdit from "./pages/admin/users/usersEdit";
 
 const utils = require("./utils/common");
 const apiUsers = require("./utils/api/users");
-
+const { Search } = Input;
 const { Header, Content, Footer } = Layout;
 
 type MenuItem = Required<MenuProps>["items"][number];
@@ -74,11 +67,6 @@ const menu = (
     items={[
       {
         key: "1",
-        label: "PROFILE SETTING",
-        icon: <SettingOutlined />,
-      },
-      {
-        key: "2",
         danger: true,
         label: "SIGN OUT",
         icon: <LogoutOutlined />,
@@ -203,24 +191,12 @@ const App: React.FC = () => {
                   paddingRight: "20px",
                 }}
               >
-                <Button
-                  type="dashed"
-                  icon={<SearchOutlined />}
-                  size="large"
-                  style={{
-                    textAlign: "right",
-                    marginRight: "20px",
-                    color: "gray",
-                  }}
-                >
-                  Search for Movies and Actors
-                </Button>
-                {isVisibleSiginInButton && (
-                  <Button type="primary" onClick={showModal} shape="round">
-                    Sign In
-                  </Button>
-                )}
-
+                  
+                  {isVisibleSiginInButton && (
+                    <Button type="primary" onClick={showModal} shape="round">
+                      Sign In
+                    </Button>
+                  )}
                 {isVisibleAvatar && (
                   <>
                     <Dropdown
@@ -247,7 +223,6 @@ const App: React.FC = () => {
                     </Dropdown>
                   </>
                 )}
-
                 {open && <Login open={open} setOpen={setOpen} />}
               </Col>
             </Row>
@@ -267,7 +242,10 @@ const App: React.FC = () => {
                 <Route path="/manage/movies" element={<Movies />} />
                 <Route path="/manage/movies/add" element={<MoviesAdd />} />
                 <Route path="/manage/movies/edit" element={<MoviesEdit />} />
-                <Route path="/manage/movies/review" element={<MoviesReview />} />
+                <Route
+                  path="/manage/movies/review"
+                  element={<MoviesReview />}
+                />
                 <Route path="/manage/actors" element={<Actors />} />
                 <Route path="/manage/actors/add" element={<ActorsAdd />} />
                 <Route path="/manage/actors/edit" element={<ActorsEdit />} />

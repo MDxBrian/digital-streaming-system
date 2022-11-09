@@ -16,10 +16,10 @@ export const getCookie = (cname: string) => {
   let ca = decodedCookie.split(";");
   for (let i = 0; i < ca.length; i++) {
     let c = ca[i];
-    while (c.charAt(0) == " ") {
+    while (c.charAt(0) === " ") {
       c = c.substring(1);
     }
-    if (c.indexOf(name) == 0) {
+    if (c.indexOf(name) === 0) {
       return c.substring(name.length, c.length);
     }
   }
@@ -29,13 +29,10 @@ export const getCookie = (cname: string) => {
 export const ratingAvg = (data: any[]): any => {
   let sum = 0;
   let length = 0;
-  data.map((val: any) => {
-    console.log(val)
+  data.forEach((val: any) => {
     sum += val.rate;
     length++;
   });
-  console.log(sum)
   const reviewCount = length || 1;
-  console.log(parseFloat((sum / reviewCount || 0).toFixed(2)));
   return parseFloat((sum / reviewCount || 0).toFixed(2))
 };

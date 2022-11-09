@@ -1,6 +1,6 @@
-import { Form, Input, Space, Card, Table, Image, Popconfirm, Tag } from "antd";
+import { Card, Table, Button, Popconfirm, Tag } from "antd";
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import type { ColumnsType } from "antd/es/table";
 // import "./actors.scss";
 
@@ -74,9 +74,11 @@ const Users = () => {
       key: "active",
       align: "center",
       render: (data): any => (
-        <Tag color={data ? "success" : "error"}>
-          {data ? "ACTIVE" : "INACTIVE"}
-        </Tag>
+        <span>
+          <Tag style={{width: 100}} color={data ? "success" : "error"}>
+            {data ? "ACTIVE" : "INACTIVE"}
+          </Tag>
+        </span>
       ),
     },
     {

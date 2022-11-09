@@ -23,7 +23,6 @@ const Actors = () => {
   const [actorList, setActorList] = useState([]);
 
   useEffect(() => {
-    // setLoading(true);
     fetch();
   }, []);
 
@@ -111,8 +110,7 @@ const Actors = () => {
               })
             }
           >
-            {" "}
-            Edit |{" "}
+            Edit |
           </a>
           <Popconfirm
             title="Sure to delete?"

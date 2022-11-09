@@ -11,7 +11,7 @@ function RegisterSuccess() {
       title="Successfully Registered!"
       subTitle="Back to the Home Page and try to Sign In."
       extra={[
-        <Button type="primary" key="console" onClick={goHome}>
+        <Button type="primary" onClick={goHome}>
           Go HOME
         </Button>,
       ]}
