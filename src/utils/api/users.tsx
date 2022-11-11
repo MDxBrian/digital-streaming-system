@@ -46,7 +46,7 @@ export const updateUser = (payload: any) => {
   return axios
     .put(`http://localhost:3000/users/${payload.id}`, payload)
     .then((res) => {
-      if (res.status === 204) return true;
+      return res.data;
     })
     .catch((err) => {
       throw err;
@@ -57,7 +57,7 @@ export const deleteUsers = (id: string) => {
   return axios
     .delete(`http://localhost:3000/users/${id}`)
     .then((res) => {
-      if (res.status === 204) return true;
+      return res.data;
     })
     .catch((err) => {
       throw err;

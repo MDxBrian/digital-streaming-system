@@ -1,140 +1,57 @@
-import { LogoutOutlined, TeamOutlined } from "@ant-design/icons";
-import type { MenuProps } from "antd";
-import {
-  Layout,
-  Input,
-  Col,
-  Row,
-  Button,
-  Dropdown,
-  message,
-  Avatar,
-  Tooltip,
-  Space,
-  Menu,
-} from "antd";
-import React, { useEffect, useState } from "react";
-import {
-  BrowserRouter as Router,
-  Route,
-  Routes,
-  Navigate,
-  Link,
-  redirect,
-} from "react-router-dom";
-import SideMenu from "./components/Layout/sideMenu/index";
+import { useEffect, useState } from "react";
+import { Layout } from "antd";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { checkUsers } from "./utils/common";
+import SideMenu from "./components/Layout/SideMenu/SideMenu";
 import Actors from "./pages/admin/actors/actors";
 import ActorsAdd from "./pages/admin/actors/actorsAdd";
 import ActorsEdit from "./pages/admin/actors/actorsEdit";
-// import Header from "./components/Layout/Header/header";
 import AdminHome from "./pages/admin/home";
 import MovieDetails from "./pages/admin/movies/movieDetails";
 import Movies from "./pages/admin/movies/movies";
 import MoviesAdd from "./pages/admin/movies/moviesAdd";
 import MoviesReview from "./pages/admin/movies/moviesReview";
-import Login from "./pages/login/login";
-import Register from "./pages/login/register";
-import RegisterSuccess from "./pages/login/registerSuccess";
-import PrivateRoute from "./pages/privateRoute";
-
-import { DownOutlined, UserOutlined } from "@ant-design/icons";
+import Register from "./pages/register/register";
+import RegisterSuccess from "./pages/register/registerSuccess";
+import PrivateRoute from "./pages/login/privateRoute";
 import MoviesEdit from "./pages/admin/movies/moviesEdit";
 import ActorDetails from "./pages/admin/actors/actorDetails";
 import Users from "./pages/admin/users/users";
 import UsersEdit from "./pages/admin/users/usersEdit";
+import Headers from "./components/Layout/Header/Header";
 
-const utils = require("./utils/common");
 const apiUsers = require("./utils/api/users");
-const { Search } = Input;
-const { Header, Content, Footer } = Layout;
 
-type MenuItem = Required<MenuProps>["items"][number];
+const { Content, Footer } = Layout;
 
-const onMenuClick: MenuProps["onClick"] = (e) => {
-  console.log("click", e);
-};
-
-const items: MenuProps["items"] = [
-  {
-    label: "1st menu item",
-    key: "1",
-    icon: <TeamOutlined />,
-  },
-];
-
-const menu = (
-  <Menu
-    items={[
-      {
-        key: "1",
-        danger: true,
-        label: "SIGN OUT",
-        icon: <LogoutOutlined />,
-        onClick: () => {
-          sessionStorage.removeItem("token");
-          document.cookie =
-            "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-          window.location.href = "/";
-        },
-      },
-    ]}
-  />
-);
-
-const handleMenuClick: MenuProps["onClick"] = (e) => {
-  message.info("Click on menu item.");
-  console.log("click", e);
-};
-
-const menuProps = {
-  items,
-  onClick: handleMenuClick,
-};
-
-function getItem(
-  label: React.ReactNode,
-  key: React.Key,
-  icon?: React.ReactNode,
-  children?: MenuItem[]
-): MenuItem {
-  return {
-    key,
-    icon,
-    children,
-    label,
-  } as MenuItem;
-}
-
-const App: React.FC = () => {
-  // const [collapsed, setCollapsed] = useState(false);
-  const [roleId, setRoleId] = useState(2);
+const App = () => {
   const [userId, setUserId] = useState("");
-
+  const [name, setName] = useState("");
+  const [roleId, setRoleId] = useState(2);
   const [open, setOpen] = useState(false);
-  const [registerOpen, setRegisterOpen] = useState(false);
-  const [confirmLoading, setConfirmLoading] = useState(false);
-  const [modalText, setModalText] = useState("Content of the modal");
-  const [loading, setLoading] = useState(false);
   const [isVisibleSideMenu, setIsVisibileSideMenu] = useState(false);
   const [isVisibleAvatar, setIsVisibileAvatar] = useState(false);
-  const [getName, setName] = useState("");
   const [isVisibleSiginInButton, setIsVisibleSiginInButton] = useState(true);
+
   const logginUserId = sessionStorage.getItem("token");
 
   useEffect(() => {
-    if (logginUserId) {
-      fetchUserDetails();
-    } else {
-      setIsVisibleSiginInButton(true);
-    }
+    /*
+     * Checking if 0 length users from database and created the default root admin user.
+     * @param {email:"admin@root.com", password:"root"}
+     */
+    checkUsers();
+    logginUserId ? fetchUserDetails() : setIsVisibleSiginInButton(true);
   }, []);
 
   const fetchUserDetails = async () => {
     const res = await apiUsers.getWhoAmI(logginUserId);
+
     if (!res) {
       setIsVisibleSiginInButton(true);
       setIsVisibileAvatar(false);
     }
+
     const details = await apiUsers.getUserDetails(res);
     setUserId(details.id);
     setName(details.firstName.charAt(0) + details.lastName.charAt(0));
@@ -150,83 +67,21 @@ const App: React.FC = () => {
     }
   };
 
-  const showModal = () => {
-    setOpen(true);
-  };
-
-  const handleButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    message.info("Click on left button.");
-    console.log("click left button", e);
-  };
-
-  const items = [
-    { label: "item 1", key: "item-1" }, // remember to pass the key prop
-    { label: "item 2", key: "item-2" },
-  ];
-
   return (
     <Router>
       <Layout style={{ minHeight: "100vh" }}>
         {isVisibleSideMenu && <SideMenu />}
-        {/* <Header /> */}
         <Layout className="site-layout">
-          <Header className="site-layout-background" style={{ padding: 0 }}>
-            <Row>
-              <Col
-                span={12}
-                style={{
-                  color: "#f0f2f5",
-                  fontFamily: "initial",
-                  fontSize: "26px",
-                  paddingLeft: "20px",
-                }}
-              >
-                <Row>DIGITAL STREAMING SYSTEM</Row>
-              </Col>
-              <Col
-                span={12}
-                style={{
-                  textAlign: "right",
-                  color: "#f84464",
-                  paddingRight: "20px",
-                }}
-              >
-                  
-                  {isVisibleSiginInButton && (
-                    <Button type="primary" onClick={showModal} shape="round">
-                      Sign In
-                    </Button>
-                  )}
-                {isVisibleAvatar && (
-                  <>
-                    <Dropdown
-                      overlay={menu}
-                      trigger={["click"]}
-                      placement="bottomRight"
-                      arrow
-                    >
-                      <a onClick={(e) => e.preventDefault()}>
-                        <Space>
-                          <Avatar
-                            size={38}
-                            style={{
-                              color: "#f56a00",
-                              backgroundColor: "#fde3cf",
-                              boxShadow: "2px 2px 5px darkblue",
-                            }}
-                          >
-                            {getName}
-                          </Avatar>
-                          <DownOutlined />
-                        </Space>
-                      </a>
-                    </Dropdown>
-                  </>
-                )}
-                {open && <Login open={open} setOpen={setOpen} />}
-              </Col>
-            </Row>
-          </Header>
+          <Headers
+            name={name}
+            open={open}
+            isVisibleAvatar={isVisibleAvatar}
+            isVisibleSiginInButton={isVisibleSiginInButton}
+            setOpen={setOpen}
+            setName={setName}
+            setIsVisibileAvatar={setIsVisibileAvatar}
+            setIsVisibleSiginInButton={setIsVisibleSiginInButton}
+          />
           <Content>
             <Routes>
               <Route path="/" element={<AdminHome />} />

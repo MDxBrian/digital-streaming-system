@@ -55,7 +55,6 @@ const MoviesAdd = () => {
     value,
     options,
     onChange: (newValue: []) => {
-      console.log(newValue);
       setValue(newValue);
     },
     placeholder: "Select Actors...",

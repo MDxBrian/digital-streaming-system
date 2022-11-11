@@ -1,15 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  Form,
-  Input,
-  InputNumber,
-  Card,
-  Button,
-  Row,
-  Col,
-  Select,
-} from "antd";
+import { Form, Input, InputNumber, Card, Button, Row, Col, Select } from "antd";
 
 const api = require("../../../utils/api/actors");
 const { Option } = Select;
@@ -18,15 +9,13 @@ const ActorsAdd = () => {
   const navigate = useNavigate();
 
   const [previewer, setPreviewer] = useState("error");
-  const [loading, setLoading] = useState(false);
+  const [_, setLoading] = useState(false);
 
   const handleChange = (event: any) => {
     setPreviewer(event.target.value);
   };
 
   const onSubmit = async (data: any) => {
-    // setConfirmLoading(false);
-
     const payload = {
       firstName: data.firstName,
       lastName: data.lastName,
@@ -85,7 +74,6 @@ const ActorsAdd = () => {
             >
               <Input />
             </Form.Item>
-
             <Form.Item
               name="lastName"
               label="Last Name"

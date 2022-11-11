@@ -1,16 +1,16 @@
-import React from "react";
 import ReactDOM from "react-dom/client";
-import "./index.scss";
-import "antd/dist/antd.min.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { LoaderProvider } from "./context/LoaderContext";
 import { Provider } from "react-redux";
 import { store } from "./redux/store/config";
+import "./index.scss";
+import "antd/dist/antd.min.css";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
+
 root.render(
   <Provider store={store}>
     <LoaderProvider>

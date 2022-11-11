@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Card, List, Badge, Space, Input } from "antd";
+import { Card, List, Space, Input } from "antd";
 import Login from "../login/login";
 import { useNavigate } from "react-router-dom";
 import LoaderContext from "../../context/LoaderContext";
@@ -32,23 +32,29 @@ function AdminHome() {
 
   const moviesData = useAppSelector((state) => state.movies);
   const actorsData = useAppSelector((state) => state.actors);
+
+  const { loading } = useContext(LoaderContext);
+
+  const [searchTerm, setSearchTerm] = useState("");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(16);
   const [open, setOpen] = useState(false);
-  const { loading } = useContext(LoaderContext);
+
+  const [movies, setMovies]: any = useState([]);
+  const [actors, setActors]: any = useState([]);
 
   useEffect(() => {
     fetch();
   }, []);
 
+  const [confirmLoading, setConfirmLoading] = useState(false);
   const fetch = () => {
-    dispatch(startSetActors());
+    setConfirmLoading(true);
     dispatch(startSetMovies());
+    dispatch(startSetActors());
+    setConfirmLoading(false);
   };
 
-  const [searchTerm, setSearchTerm] = useState("");
-  const [movies, setMovies]: any = useState([]);
-  const [actors, setActors]: any = useState([]);
   const onSearch = (value: string) => {
     setSearchTerm(value);
     setMovies(
@@ -91,6 +97,7 @@ function AdminHome() {
         }
       >
         <List
+          loading={confirmLoading}
           grid={{ gutter: 16, column: 8 }}
           dataSource={searchTerm ? movies : moviesData}
           renderItem={(item: any) => (
@@ -110,7 +117,7 @@ function AdminHome() {
                     src={item.imageUrl}
                   />
                 }
-                onClick={async () => {
+                onClick={() => {
                   navigate("/manage/movies/details", {
                     state: {
                       id: item.id,
@@ -121,21 +128,19 @@ function AdminHome() {
                       description: item.description,
                       duration: item.runningTime,
                       yearOfRelease: item.yearOfRelease,
+                      actorsId: item.actorsId,
                     },
                   });
                 }}
               >
-                <Badge.Ribbon
-                  text={item.yearOfRelease}
-                  style={{ marginTop: "-261px", marginRight: "-10px" }}
-                >
-                  <Meta
-                    title={
-                      <label style={{ color: "#002140" }}>{item.title}</label>
-                    }
-                  />
-                  <small style={{ color: "#a6aaae" }}>{item.runningTime}</small>
-                </Badge.Ribbon>
+                <Meta
+                  title={
+                    <label style={{ color: "#002140" }}>{item.title}</label>
+                  }
+                />
+                <small
+                  style={{ color: "#a6aaae" }}
+                >{`${item.yearOfRelease} | ${item.runningTime}`}</small>
               </Card>
             </List.Item>
           )}
@@ -165,17 +170,6 @@ function AdminHome() {
             borderRadius: "10px",
             boxShadow: "10px 10px 5px #dee0e3",
           }}
-          extra={
-            <Space direction="vertical">
-              <Search
-                placeholder="Search movies and actors..."
-                onChange={(e) => onSearch(e.target.value)}
-                style={{ width: 304 }}
-                allowClear
-                enterButton
-              />
-            </Space>
-          }
         >
           <List
             grid={{ gutter: 16, column: 8 }}
@@ -210,11 +204,13 @@ function AdminHome() {
                     });
                   }}
                 >
-                    <Meta
-                      title={
-                        <label style={{ color: "#002140" }}>{`${item.firstName} ${item.lastName}`}</label>
-                      }
-                    />
+                  <Meta
+                    title={
+                      <label
+                        style={{ color: "#002140" }}
+                      >{`${item.firstName} ${item.lastName}`}</label>
+                    }
+                  />
                 </Card>
               </List.Item>
             )}

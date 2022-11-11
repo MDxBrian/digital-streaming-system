@@ -37,7 +37,7 @@ export const deleteMovies = (id: string) => {
   return axios
     .delete(`http://localhost:3000/movies/${id}`)
     .then((res) => {
-      if (res.status === 204) return true;
+      return res.data
     })
     .catch((err) => {
       throw err;

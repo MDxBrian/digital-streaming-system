@@ -4,10 +4,19 @@ import {
   SwitcherFilled,
   VideoCameraFilled,
   StarFilled,
-  SettingOutlined 
+  SettingOutlined,
 } from "@ant-design/icons";
 
-export const SideMenuData: any = [
+interface ISideMenu {
+  key: string;
+  icon: JSX.Element;
+  label: JSX.Element;
+  path?: string;
+  children?: object[];
+  page: string;
+}
+
+export const SideMenuData: ISideMenu[] = [
   {
     key: "0",
     icon: <HomeFilled />,
@@ -28,7 +37,7 @@ export const SideMenuData: any = [
         path: "/manage/movies",
         page: "MOVIES",
       },
-      
+
       {
         key: "3",
         icon: <StarFilled />,

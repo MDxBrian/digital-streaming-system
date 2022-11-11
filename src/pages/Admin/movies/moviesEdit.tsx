@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Form,
   Input,
@@ -29,12 +29,12 @@ const MoviesAdd = () => {
   const location = useLocation();
 
   const options: ItemProps[] = [];
+  const [data, setData]: any[] = useState([]);
+  const [value, setValue]: any = useState([]);
+
   useEffect(() => {
     fetchActorList();
   }, []);
-
-  const [data, setData]: any[] = useState([]);
-  const [value, setValue]: any = useState([]);
 
   const fetchActorList = async () => {
     let res = await apiActors.getAllActors();
@@ -98,6 +98,7 @@ const MoviesAdd = () => {
               label="Movie Title"
               name="title"
               initialValue={location.state.title}
+              hasFeedback
               rules={[
                 {
                   required: true,
@@ -116,9 +117,8 @@ const MoviesAdd = () => {
                     style={{ width: "100%" }}
                     placeholder="Please select"
                     defaultValue={location.state.actorsId}
-                    onChange={(newValue: any[]) => {
-                      console.log(newValue);
-                      setValue(newValue);
+                    onChange={(actors: string[]) => {
+                      setValue(actors);
                     }}
                     options={data}
                     maxTagCount="responsive"
@@ -134,6 +134,7 @@ const MoviesAdd = () => {
             <Form.Item
               label="Image URL"
               name="imageUrl"
+              hasFeedback
               rules={[
                 {
                   required: true,
@@ -150,6 +151,7 @@ const MoviesAdd = () => {
               initialValue={location.state.budgetCost}
               label="Budget Cost"
               name="cost"
+              hasFeedback
               rules={[
                 {
                   required: true,
@@ -172,6 +174,7 @@ const MoviesAdd = () => {
               initialValue={location.state.yearOfRelease}
               label="Year of Release"
               name="yearRelease"
+              hasFeedback
               rules={[
                 {
                   required: true,
@@ -185,6 +188,7 @@ const MoviesAdd = () => {
               label="Duration"
               name="runningTime"
               initialValue={location.state.runningTime}
+              hasFeedback
               rules={[
                 {
                   required: true,
@@ -197,6 +201,7 @@ const MoviesAdd = () => {
             <Form.Item
               label="Director"
               name="director"
+              hasFeedback
               initialValue={location.state.director}
               rules={[
                 {
@@ -210,6 +215,7 @@ const MoviesAdd = () => {
             <Form.Item
               label="Description"
               name="description"
+              hasFeedback
               initialValue={location.state.description}
             >
               <TextArea

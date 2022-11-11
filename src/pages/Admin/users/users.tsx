@@ -1,11 +1,9 @@
-import { Card, Table, Button, Popconfirm, Tag } from "antd";
-import React, { useState, useEffect } from "react";
+import { Card, Table, message, Popconfirm, Tag } from "antd";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import type { ColumnsType } from "antd/es/table";
-// import "./actors.scss";
 
 interface DataType {
-  key: React.Key;
   id: string;
   firstName: string;
   lastName: string;
@@ -31,7 +29,6 @@ const Users = () => {
   };
 
   const data = userList.map((val: DataType) => ({
-    key: val.id,
     id: val.id,
     firstName: val.firstName,
     lastName: val.lastName,
@@ -65,7 +62,9 @@ const Users = () => {
       key: "roleId",
       align: "center",
       render: (data) => (
-        <Tag color="cyan"> {data == 1 ? "ADMIN USER" : "NORMAL USER"} </Tag>
+        <Tag color={`${data === 1 ? "#afe5dc" : "cyan"}`}>
+          {data === 1 ? "ADMIN USER" : "NORMAL USER"}{" "}
+        </Tag>
       ),
     },
     {
@@ -75,7 +74,7 @@ const Users = () => {
       align: "center",
       render: (data): any => (
         <span>
-          <Tag style={{width: 100}} color={data ? "success" : "error"}>
+          <Tag style={{ width: 100 }} color={data ? "success" : "error"}>
             {data ? "ACTIVE" : "INACTIVE"}
           </Tag>
         </span>
@@ -92,7 +91,7 @@ const Users = () => {
             onClick={() =>
               navigate("/manage/users/edit", {
                 state: {
-                  id: record.key,
+                  id: record.id,
                   firstName: record.firstName,
                   lastName: record.lastName,
                   email: record.email,
@@ -106,7 +105,7 @@ const Users = () => {
           </a>
           <Popconfirm
             title="Sure to delete?"
-            onConfirm={() => handleDelete(record.key)}
+            onConfirm={() => handleDelete(record.id)}
           >
             <a> Delete </a>
           </Popconfirm>
@@ -115,10 +114,13 @@ const Users = () => {
     },
   ];
 
-  const handleDelete = async (id: React.Key) => {
+  const handleDelete = async (id: string) => {
     let res = await api.deleteUsers(id);
-    if (res) fetch();
-    return;
+    if (res.success) {
+      fetch();
+    } else {
+      message.error(res.message);
+    }
   };
 
   return (

@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { Tag, Rate, Image, Card, Table, Popconfirm, Button } from "antd";
+import  { useEffect, useState } from "react";
+import { Tag, Rate, Card, Table, Popconfirm, Button } from "antd";
 import type { ColumnsType } from "antd/es/table";
 
 interface DataType {
-  key: React.Key;
   id: string;
   title: string;
   imageUrl: any;

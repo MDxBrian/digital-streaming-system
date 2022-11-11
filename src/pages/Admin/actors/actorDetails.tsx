@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react";
-import { Card, Row, Col, Typography, List, Input } from "antd";
+import { Card, Row, Col, List } from "antd";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const apiMovies = require("../../../utils/api/movies");
-const apiActors = require("../../../utils/api/actors");
-const common = require("../../../utils/common");
 
-interface DataType {
+interface IMovies {
   id: string;
   imageUrl: string;
   title: string;
@@ -41,7 +39,7 @@ const ActorDetails = () => {
     setMovieList(newObj);
   };
 
-  const dataMovies = movieList.map((val: DataType) => ({
+  const dataMovies = movieList.map((val: IMovies) => ({
     id: val.id,
     title: val.title,
     imageUrl: val.imageUrl,

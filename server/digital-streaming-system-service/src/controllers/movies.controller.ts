@@ -18,12 +18,14 @@ import {
   response,
 } from '@loopback/rest';
 import {Movies} from '../models';
-import {MoviesRepository} from '../repositories';
-
+import {MoviesRepository, ReviewsRepository} from '../repositories';
+import {CustomResponse, CustomResponseSchema} from '../utils/custom-schema';
 export class MoviesController {
   constructor(
     @repository(MoviesRepository)
-    public moviesRepository : MoviesRepository,
+    public moviesRepository: MoviesRepository,
+    @repository(ReviewsRepository)
+    public reviewsRepository: ReviewsRepository,
   ) {}
 
   @post('/movies')
@@ -52,9 +54,7 @@ export class MoviesController {
     description: 'Movies model count',
     content: {'application/json': {schema: CountSchema}},
   })
-  async count(
-    @param.where(Movies) where?: Where<Movies>,
-  ): Promise<Count> {
+  async count(@param.where(Movies) where?: Where<Movies>): Promise<Count> {
     return this.moviesRepository.count(where);
   }
 
@@ -70,9 +70,7 @@ export class MoviesController {
       },
     },
   })
-  async find(
-    @param.filter(Movies) filter?: Filter<Movies>,
-  ): Promise<Movies[]> {
+  async find(@param.filter(Movies) filter?: Filter<Movies>): Promise<Movies[]> {
     return this.moviesRepository.find(filter);
   }
 
@@ -106,7 +104,8 @@ export class MoviesController {
   })
   async findById(
     @param.path.string('id') id: string,
-    @param.filter(Movies, {exclude: 'where'}) filter?: FilterExcludingWhere<Movies>
+    @param.filter(Movies, {exclude: 'where'})
+    filter?: FilterExcludingWhere<Movies>,
   ): Promise<Movies> {
     return this.moviesRepository.findById(id, filter);
   }
@@ -143,8 +142,26 @@ export class MoviesController {
   @del('/movies/{id}')
   @response(204, {
     description: 'Movies DELETE success',
+    content: {'application/json': {schema: CustomResponseSchema}},
   })
-  async deleteById(@param.path.string('id') id: string): Promise<void> {
+  async deleteById(
+    @param.path.string('id') id: string,
+  ): Promise<CustomResponse<{}>> {
+    try {
+      
     await this.moviesRepository.deleteById(id);
+    await this.reviewsRepository.deleteAll({movieId: id});
+    return {
+      success: true,
+      data: id,
+      message: 'Successfully deleted.',
+    };
+    } catch (error) {
+      return {
+        success: false,
+        data: null,
+        message: error ? error.message : 'Deleting movies failed.',
+      };
+    }
   }
 }

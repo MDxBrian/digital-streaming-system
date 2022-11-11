@@ -1,15 +1,16 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Form, Input, InputNumber, Card, Button, Row, Col, Select } from "antd";
 
 const api = require("../../../utils/api/actors");
+
 const { Option } = Select;
 
 const ActorsEdit = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [previewer, setPreviewer] = useState("error");
+  const [_, setPreviewer] = useState("error");
   const [loading, setLoading] = useState(false);
 
   const handleChange = (event: any) => {
@@ -25,7 +26,6 @@ const ActorsEdit = () => {
       gender: data.gender,
       age: data.age,
     };
-
     setLoading(true);
     let res = await api.updateMovieDetails(payload);
     if (res) {
@@ -79,7 +79,6 @@ const ActorsEdit = () => {
             >
               <Input />
             </Form.Item>
-
             <Form.Item
               name="lastName"
               label="Last Name"

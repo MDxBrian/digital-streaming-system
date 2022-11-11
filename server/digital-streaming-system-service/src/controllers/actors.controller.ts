@@ -18,12 +18,15 @@ import {
   response,
 } from '@loopback/rest';
 import {Actors} from '../models';
-import {ActorsRepository} from '../repositories';
+import {ActorsRepository, MoviesRepository} from '../repositories';
+import {CustomResponse, CustomResponseSchema} from '../utils/custom-schema';
 
 export class ActorsController {
   constructor(
     @repository(ActorsRepository)
-    public actorsRepository : ActorsRepository,
+    public actorsRepository: ActorsRepository,
+    @repository(MoviesRepository)
+    public moviesRepository: MoviesRepository,
   ) {}
 
   @post('/actors')
@@ -52,9 +55,7 @@ export class ActorsController {
     description: 'Actors model count',
     content: {'application/json': {schema: CountSchema}},
   })
-  async count(
-    @param.where(Actors) where?: Where<Actors>,
-  ): Promise<Count> {
+  async count(@param.where(Actors) where?: Where<Actors>): Promise<Count> {
     return this.actorsRepository.count(where);
   }
 
@@ -70,9 +71,7 @@ export class ActorsController {
       },
     },
   })
-  async find(
-    @param.filter(Actors) filter?: Filter<Actors>,
-  ): Promise<Actors[]> {
+  async find(@param.filter(Actors) filter?: Filter<Actors>): Promise<Actors[]> {
     return this.actorsRepository.find(filter);
   }
 
@@ -106,7 +105,8 @@ export class ActorsController {
   })
   async findById(
     @param.path.string('id') id: string,
-    @param.filter(Actors, {exclude: 'where'}) filter?: FilterExcludingWhere<Actors>
+    @param.filter(Actors, {exclude: 'where'})
+    filter?: FilterExcludingWhere<Actors>,
   ): Promise<Actors> {
     return this.actorsRepository.findById(id, filter);
   }
@@ -143,8 +143,35 @@ export class ActorsController {
   @del('/actors/{id}')
   @response(204, {
     description: 'Actors DELETE success',
+    content: {'application/json': {schema: CustomResponseSchema}},
   })
-  async deleteById(@param.path.string('id') id: string): Promise<void> {
-    await this.actorsRepository.deleteById(id);
+  async deleteById(
+    @param.path.string('id') id: string,
+  ): Promise<CustomResponse<{}>> {
+    try {
+      const {count} = await this.moviesRepository.count({
+        actorsId: id,
+      });
+      if (count > 0) {
+        return {
+          success: false,
+          data: null,
+          message: `This actor can't de delete, as he/she had been cast in a movie. `,
+        };
+      } else {
+        await this.actorsRepository.deleteById(id);
+        return {
+          success: true,
+          data: id,
+          message: 'Actor deleted successfully.',
+        };
+      }
+    } catch (error) {
+      return {
+        success: false,
+        data: null,
+        message: error ? error.message : 'Deleting actor failed.',
+      };
+    }
   }
 }
