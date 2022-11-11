@@ -1,12 +1,9 @@
-import { Form, Input, Space, Card, Table, Image, Popconfirm } from "antd";
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { Card, Table, Image, Popconfirm, message } from "antd";
 import type { ColumnsType } from "antd/es/table";
-// import "./actors.scss";
-import actorsAdd from "./actorsAdd";
 
 interface DataType {
-  key: React.Key;
   id: string;
   firstName: string;
   lastName: string;
@@ -85,7 +82,7 @@ const Actors = () => {
             onClick={() =>
               navigate("/manage/actors/details", {
                 state: {
-                  id: record.key,
+                  id: record.id,
                   imageUrl: record.imageUrl,
                   firstName: record.firstName,
                   lastName: record.lastName,
@@ -94,13 +91,14 @@ const Actors = () => {
                 },
               })
             }
-          > View | 
+          >
+            View |
           </a>
           <a
             onClick={() =>
               navigate("/manage/actors/edit", {
                 state: {
-                  id: record.key,
+                  id: record.id,
                   imageUrl: record.imageUrl,
                   firstName: record.firstName,
                   lastName: record.lastName,
@@ -114,7 +112,7 @@ const Actors = () => {
           </a>
           <Popconfirm
             title="Sure to delete?"
-            onConfirm={() => handleDelete(record.key)}
+            onConfirm={() => handleDelete(record.id)}
           >
             <a> Delete </a>
           </Popconfirm>
@@ -123,11 +121,13 @@ const Actors = () => {
     },
   ];
 
-  const handleDelete = async (key: React.Key) => {
-    // setLoading(true);
-    let res = await api.deleteActors(key);
-    if (res) fetch();
-    // return setLoading(false);
+  const handleDelete = async (id: string) => {
+    let res = await api.deleteActors(id);
+    if (res.success) {
+      fetch();
+    } else {
+      return message.error(res.message);
+    }
   };
 
   return (

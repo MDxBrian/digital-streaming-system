@@ -71,7 +71,7 @@ const Movies = () => {
       });
       setMovieList(newObj);
     });
-    setLoading(false);
+    return setLoading(false);
   };
 
   const columns: ColumnsType<DataType> = [
@@ -171,9 +171,9 @@ const Movies = () => {
     },
   ];
 
-  const handleDelete = async (key: string) => {
-    dispatch(removeMovies(key));
-    let res = await apiMovies.deleteMovies(key);
+  const handleDelete = async (id: string) => {
+    dispatch(removeMovies(id));
+    let res = await apiMovies.deleteMovies(id);
     if (res) fetch();
   };
 

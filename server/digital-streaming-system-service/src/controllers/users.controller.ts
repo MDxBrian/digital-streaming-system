@@ -21,7 +21,9 @@ import {
   SchemaObject,
 } from '@loopback/rest';
 
-// ---------- ADD IMPORTS -------------
+import {CustomResponse, CustomResponseSchema} from '../utils/custom-schema';
+import {ReviewsRepository} from '../repositories';
+// ---------- ADD IMPORTS FROM JWT AUTHENTICATION -------------
 import {inject} from '@loopback/core';
 import {
   Credentials,
@@ -36,6 +38,7 @@ import {SecurityBindings, securityId, UserProfile} from '@loopback/security';
 import {genSalt, hash} from 'bcryptjs';
 import _ from 'lodash';
 // ----------------------------------
+
 @model()
 export class CreateUser extends User {
   @property({
@@ -79,6 +82,14 @@ export const RequestBody = {
   },
 };
 
+export class NewUserRequest extends User {
+  @property({
+    type: 'string',
+    required: true,
+  })
+  password: string;
+}
+
 export class UsersController {
   constructor(
     @repository(UserRepository)
@@ -90,6 +101,8 @@ export class UsersController {
     @inject(SecurityBindings.USER, {optional: true})
     public user: UserProfile,
     @repository(UserRepository) protected userRepository: UserRepository,
+    @repository(ReviewsRepository)
+    public reviewsRepository: ReviewsRepository,
   ) {}
 
   @post('/signup', {
@@ -98,9 +111,7 @@ export class UsersController {
         description: 'User',
         content: {
           'application/json': {
-            schema: {
-              'x-ts-type': User,
-            },
+            schema: CustomResponseSchema,
           },
         },
       },
@@ -111,21 +122,41 @@ export class UsersController {
       content: {
         'application/json': {
           schema: getModelSchemaRef(CreateUser, {
-            title: 'NewUser',
+            title: 'User registration.',
           }),
         },
       },
     })
-    newUserRequest: CreateUser,
-  ): Promise<User> {
-    const password = await hash(newUserRequest.password, await genSalt());
-    const savedUser = await this.userRepository.create(
-      _.omit(newUserRequest, 'password'),
-    );
+    newUserRequest: Omit<CreateUser, 'id'>,
+  ): Promise<CustomResponse<{}>> {
+    try {
+      const emailExists = await this.userRepository.findOne({
+        where: {email: newUserRequest.email},
+      });
 
-    await this.userRepository.userCredentials(savedUser.id).create({password});
+      if (emailExists) throw new Error('Email is already exist.');
 
-    return savedUser;
+      const password = await hash(newUserRequest.password, await genSalt());
+      const savedUser = await this.userRepository.create(
+        _.omit(newUserRequest, 'password'),
+      );
+
+      await this.userRepository
+        .userCredentials(savedUser.id)
+        .create({password});
+
+      return {
+        success: true,
+        data: savedUser,
+        message: 'Successfully registered',
+      };
+    } catch (error) {
+      return {
+        success: false,
+        data: null,
+        message: error ? error.message : 'User registration failed.',
+      };
+    }
   }
 
   @post('/signin', {
@@ -285,15 +316,62 @@ export class UsersController {
   async replaceById(
     @param.path.string('id') id: string,
     @requestBody() users: User,
-  ): Promise<void> {
-    await this.usersRepository.replaceById(id, users);
+  ): Promise<CustomResponse<{}>> {
+    try {
+      if (users.hasOwnProperty('email')) {
+        const emailExists = await this.usersRepository.findOne({
+          where: {email: users.email},
+        });
+
+        if (emailExists && emailExists.id !== id)
+          throw new Error('Email is already taken.');
+      }
+      const res = await this.usersRepository.replaceById(id, users);
+      return {
+        success: true,
+        data: res,
+        message: 'Successfully updated.',
+      };
+    } catch (error) {
+      return {
+        success: false,
+        data: null,
+        message: error ? error.message : 'Failed to updated.',
+      };
+    }
   }
 
   @del('/users/{id}')
   @response(204, {
     description: 'Users DELETE success',
+    content: {'application/json': {schema: CustomResponseSchema}},
   })
-  async deleteById(@param.path.string('id') id: string): Promise<void> {
-    await this.usersRepository.deleteById(id);
+  async deleteById(
+    @param.path.string('id') id: string,
+  ): Promise<CustomResponse<{}>> {
+    try {
+      const root = await this.usersRepository.findOne({
+        where: {email: 'admin@root.com'},
+      });
+
+      if (root && root.id === id)
+        throw new Error('Invalid to delete the root admin.');
+
+      await this.usersRepository.deleteById(id);
+      await this.usersRepository.userCredentials(id).delete();
+      await this.reviewsRepository.deleteAll({userId: id});
+
+      return {
+        success: true,
+        data: id,
+        message: 'User deleted successfully.',
+      };
+    } catch (error) {
+      return {
+        success: false,
+        data: null,
+        message: error ? error.message : 'Deleting user failed.',
+      };
+    }
   }
 }

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   Form,
   Rate,
@@ -7,7 +7,6 @@ import {
   Col,
   Typography,
   List,
-  Badge,
   Avatar,
   Button,
   Comment,
@@ -17,6 +16,54 @@ import {
 import { FileAddOutlined } from "@ant-design/icons";
 import { useLocation, useNavigate } from "react-router-dom";
 import Login from "../../login/login";
+import _ from "lodash";
+import LoaderContext from "../../../context/LoaderContext";
+
+interface IActors {
+  id: string;
+  imageUrl: string;
+  firstName: string;
+  lastName: string;
+  age: string;
+  gender: string;
+}
+
+interface IReviewer {
+  id?: string;
+  date: string;
+  content: string;
+  rate: number;
+  userId: string;
+  initialName: string;
+  fullName: string;
+}
+
+interface IMovies {
+  key: React.Key;
+  id: string;
+  title: string;
+  imageUrl: string;
+  yearOfRelease: string;
+  runningTime: string;
+  director: string;
+  budgetCost: string;
+  description: string;
+  ratingAvg: any;
+  actorsId: string[];
+}
+
+interface EditorProps {
+  onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  onSubmit: () => void;
+  submitting: boolean;
+  value: string;
+}
+
+const apiActors = require("../../../utils/api/actors");
+const apiMovies = require("../../../utils/api/movies");
+const apiUsers = require("../../../utils/api/users");
+const apiReviewers = require("../../../utils/api/reviewers");
+const common = require("../../../utils/common");
 
 var arrColor = [
   "crimson",
@@ -29,39 +76,8 @@ var arrColor = [
   "darkgoldenrod",
 ];
 
-const apiActors = require("../../../utils/api/actors");
-const apiMovies = require("../../../utils/api/movies");
-const apiUsers = require("../../../utils/api/users");
-const apiReviewers = require("../../../utils/api/reviewers");
-const common = require("../../../utils/common");
-
 const { Paragraph, Text } = Typography;
 const { TextArea } = Input;
-interface DataType {
-  imageUrl: string;
-  fullname: string;
-  firstName: string;
-  lastName: string;
-  title: string;
-  age: string;
-  gender: string;
-}
-
-interface DataType {
-  date: string;
-  content: string;
-  rate: number;
-  userId: string;
-  initialName: string;
-  fullName: string;
-}
-
-interface EditorProps {
-  onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
-  onSubmit: () => void;
-  submitting: boolean;
-  value: string;
-}
 
 const Editor = ({ onChange, onSubmit, submitting, value }: EditorProps) => (
   <>
@@ -91,66 +107,62 @@ const Editor = ({ onChange, onSubmit, submitting, value }: EditorProps) => (
   </>
 );
 
-interface DataType {
-  key: React.Key;
-  id: string;
-  title: string;
-  imageUrl: string;
-  yearOfRelease: string;
-  runningTime: string;
-  director: string;
-  budgetCost: string;
-  description: string;
-  ratingAvg: any;
-  actorsId: string[];
-}
-
 const MovieDetails = (props: any) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { loading, _ } = useContext(LoaderContext);
+
   const [visibleReviewerDetails, setVibileReviewerDetails] = useState(false);
 
-  const [ellipsis, setEllipsis] = useState(true);
+  const [ellipsis] = useState(true);
   const [actorList, setActorList]: any = useState([]);
 
   const [myReviews, setMyReviews]: any = useState([]);
   const [getAllReviewDetails, setGetAllReviewDetails]: any = useState([]);
 
+  const [ratingPercentage, setRatingPercentage] = useState(0);
+
   useEffect(() => {
-    fetchActorsImages();
+    fetchActors();
     fetchReviewers();
   }, []);
 
-  const fetchActorsImages = async () => {
-    let res = await apiMovies.getMovieDetails(location.state.id);
-    const actorsId: string[] = res.actorsId;
-    let newObj: any[] = [];
-    actorsId.map(async (data: any) => {
-      let res = await apiActors.getActorDetails(data);
-      newObj.push(res);
-      return setActorList(newObj);
+  const fetchActors = async () => {
+    let newObj: IActors[] = [];
+    apiMovies.getMovieDetails(location.state.id).then((data: any) => {
+      return data.actorsId.map(async (data: any) => {
+        await apiActors.getActorDetails(data).then((item: IActors) => {
+          newObj.push(item);
+          setActorList([...newObj]);
+        });
+      });
     });
   };
 
-  const dataActors = actorList.map((val: DataType) => ({
-    id: val.id,
-    title: val.title,
-    imageUrl: val.imageUrl,
-    fullname: val.firstName + " " + val.lastName,
-    firstName: val.firstName,
-    lastName: val.lastName,
+  const dataActors = actorList.map((val: IActors) => ({
     age: val.age,
+    firstName: val.firstName,
     gender: val.gender,
+    id: val.id,
+    imageUrl: val.imageUrl,
+    lastName: val.lastName,
   }));
 
   const getInitialName = async (data: string) => {
     const details = await apiUsers.getUserDetails(data);
-    return details.firstName.charAt(0) + details.lastName.charAt(0);
+    return {
+      firstName: details.firstName,
+      lastName: details.lastName,
+      init: details.firstName.charAt(0) + details.lastName.charAt(0),
+    };
   };
 
-  const [ratingPercentage, setRatingPercentage] = useState(0);
   const fetchReviewers = async () => {
-    let userId = await apiUsers.getWhoAmI(sessionStorage.getItem("token"));
+    const token = sessionStorage.getItem("token");
+    let userId = "";
+    if (token) {
+      userId = await apiUsers.getWhoAmI(token);
+    }
     let res = await apiReviewers.getAllReviewers();
     const reviewersList: string[] = res;
     let newObj: any[] = [];
@@ -161,15 +173,15 @@ const MovieDetails = (props: any) => {
         setMyReviews(newObj);
       }
       if (data.movieId == location.state.id) {
-        const initialName: string = await getInitialName(data.userId);
+        const initialName: any = await getInitialName(data.userId);
         newObjAll.push({
           id: data.id,
           date: data.date,
           rate: data.rate,
-          fullName: data.rate,
+          fullName: `${initialName.firstName} ${initialName.lastName}`,
           content: data.content,
           userId: data.userId,
-          initialName: initialName,
+          initialName: initialName.init,
         });
         setGetAllReviewDetails(newObjAll);
         const avgRating = common.ratingAvg(newObjAll);
@@ -178,7 +190,7 @@ const MovieDetails = (props: any) => {
     });
   };
 
-  const dataAllReviewers = getAllReviewDetails.map((val: DataType) => ({
+  const dataAllReviewers = getAllReviewDetails.map((val: IReviewer) => ({
     id: val.id,
     date: val.date,
     rate: val.rate,
@@ -222,7 +234,6 @@ const MovieDetails = (props: any) => {
   };
 
   const [rate, setRate] = useState(0);
-
   return (
     <>
       {openLoginModal && (
@@ -290,13 +301,9 @@ const MovieDetails = (props: any) => {
                     <br />
                     <span style={{ color: "white" }}>Duration: </span>
                     <span style={{ color: "#c5c5c5" }}>
-                      {location.state.duration}
+                      {`${location.state.yearOfRelease} | ${location.state.duration}`}
                     </span>
                     <br />
-                    <span style={{ color: "white" }}>Year Release: </span>
-                    <span style={{ color: "#c5c5c5" }}>
-                      {location.state.yearOfRelease}
-                    </span>
                     <br />
                     <span style={{ color: "white" }}>Budget Cost: </span>
                     <span style={{ color: "#c5c5c5" }}>
@@ -321,10 +328,15 @@ const MovieDetails = (props: any) => {
                   style={{ marginTop: "10px" }}
                   grid={{ gutter: 16, column: 10 }}
                   dataSource={dataActors}
+                  loading={loading}
                   renderItem={(item: any) => (
                     <List.Item>
                       <Card
-                        style={{ width: 100, height: 100, borderRadius: "7px" }}
+                        style={{
+                          width: 100,
+                          height: 100,
+                          borderRadius: "7px",
+                        }}
                         onClick={() =>
                           navigate("/manage/actors/details", {
                             state: {
@@ -344,7 +356,6 @@ const MovieDetails = (props: any) => {
                               width: "100px",
                               height: "130px",
                             }}
-                            alt="example"
                             src={item.imageUrl}
                           />
                         }
@@ -354,16 +365,16 @@ const MovieDetails = (props: any) => {
                             color: "#c5c5c5",
                             fontSize: "9px",
                             textAlign: "center",
+                            marginTop: "-12px",
                           }}
                         >
-                          {item.fullname}
+                          {`${item.firstName} ${item.lastName}`}
                         </div>
                       </Card>
                     </List.Item>
                   )}
                 />
                 <br /> <br /> <br />
-                {/* Checking the role id and if review has already made */}
                 {myReviews.length && (
                   <span style={{ color: "white", marginTop: "60px" }}>
                     My Review: &nbsp;
@@ -444,16 +455,16 @@ const MovieDetails = (props: any) => {
               </Col>
             </Col>
             <Col span={6} pull={18}>
-                <img
-                  src={location.state.imageUrl}
-                  style={{
-                    width: "370px",
-                    height: "500px",
-                    margin: "25px",
-                    borderRadius: "10px",
-                    boxShadow: "10px 10px 5px black",
-                  }}
-                />
+              <img
+                src={location.state.imageUrl}
+                style={{
+                  width: "370px",
+                  height: "500px",
+                  margin: "25px",
+                  borderRadius: "10px",
+                  boxShadow: "10px 10px 5px black",
+                }}
+              />
             </Col>
           </Row>
         </Card>
@@ -472,10 +483,7 @@ const MovieDetails = (props: any) => {
           }}
         >
           <List
-            // className="demo-loadmore-list"
-            // loading={initLoading}
             itemLayout="horizontal"
-            // loadMore={loadMore}
             dataSource={dataAllReviewers}
             renderItem={(item: any) => (
               <List.Item>
@@ -484,9 +492,7 @@ const MovieDetails = (props: any) => {
                     <Avatar
                       style={{
                         marginTop: "7px",
-                        backgroundColor: `${
-                          arrColor[Math.floor(Math.random() * arrColor.length)]
-                        }`,
+                        backgroundColor: `${_.sample(arrColor)}`,
                       }}
                     >
                       {item.initialName}
@@ -494,8 +500,18 @@ const MovieDetails = (props: any) => {
                   }
                   title={
                     <span>
-                      {item.initialName}
+                      {`${item.fullName}`}&nbsp;&nbsp;
                       <Rate defaultValue={item.rate} disabled />
+                      <br />
+                      <p
+                        style={{
+                          fontSize: "10px",
+                          marginTop: "0px",
+                          color: "gray",
+                        }}
+                      >
+                        {item.date}
+                      </p>
                     </span>
                   }
                   description={item.content}

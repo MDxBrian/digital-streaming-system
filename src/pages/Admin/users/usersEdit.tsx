@@ -1,23 +1,6 @@
-import React, { useState } from "react";
-import {
-  Alert,
-  Card,
-  Col,
-  Row,
-  Button,
-  Form,
-  Input,
-  message,
-  Select,
-} from "antd";
-import {
-  BrowserRouter as Router,
-  Route,
-  Routes,
-  Link,
-  useNavigate,
-  useLocation,
-} from "react-router-dom";
+import { useState } from "react";
+import { Card, Button, Form, Input, Select, message } from "antd";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const apiUsers = require("../../../utils/api/users");
 const { Option } = Select;
@@ -25,28 +8,7 @@ const { Option } = Select;
 function UsersEdit() {
   const navigate = useNavigate();
   const location = useLocation();
-
   const [confirmLoading, setConfirmLoading] = useState(false);
-  const [modalText, setModalText] = useState("Content of the modal");
-  const [loading, setLoading] = useState(false);
-
-  const success = () => {
-    message.success("Successfully Registed!");
-  };
-
-  const error = () => {
-    message.error("This is an error message");
-  };
-
-  const handleOk = () => {
-    setModalText("The modal will be closed after two seconds");
-    setConfirmLoading(true);
-    setTimeout(() => {
-      // setRegisterOpen(false);
-      setConfirmLoading(false);
-    }, 2000);
-  };
-
   const onSubmit = async (data: any) => {
     const payload = {
       id: location.state.id,
@@ -57,14 +19,17 @@ function UsersEdit() {
       active: location.state.active,
     };
     let res = await apiUsers.updateUser(payload);
-    if (res) {
-      navigate("/manage/users");
+    if (res.success) {
+      setConfirmLoading(true);
+      setTimeout(() => {
+        message.success(res.message);
+        setConfirmLoading(false);
+        navigate("/manage/users");
+      }, 2000);
+    } else {
+      message.error(res.message);
     }
     return;
-  };
-
-  const onFinishFailed = (errorInfo: any) => {
-    console.log("Failed:", errorInfo);
   };
 
   return (
@@ -186,7 +151,7 @@ function UsersEdit() {
             </Select>
           </Form.Item>
           <Form.Item wrapperCol={{ offset: 8, span: 10 }}>
-            <Button type="primary" htmlType="submit">
+            <Button loading={confirmLoading} type="primary" htmlType="submit">
               Update
             </Button>
           </Form.Item>

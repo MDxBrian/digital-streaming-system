@@ -37,13 +37,12 @@ export const deleteActors = (key: string) => {
   return axios
     .delete(`http://localhost:3000/actors/${key}`)
     .then((res) => {
-      if (res.status === 204) return true;
+      return res.data;
     })
     .catch((err) => {
       throw err;
     });
 };
-
 
 export const updateMovieDetails = (payload: any) => {
   return axios
