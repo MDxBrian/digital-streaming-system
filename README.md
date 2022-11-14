@@ -81,7 +81,7 @@ This project was designed by AntD.
 
 In the project directory, you can run:
 
-### `npm start`
+### `cd frontend && npm start`
 
 Runs the app in the development mode.\
 Open [http://localhost:3001](http://localhost:3001) to view it in the browser.
@@ -103,13 +103,12 @@ This project was NO SQL `loopback 4`.
 ## Available Scripts
 
 In the project directory, you can run:
-### `cd server & cd digital-streaming-streaming service.`
+### `cd backend && npm start`
 
 FYI: If you are first timer we have an admin default credentials to see the features.
 email: admin@root.com
 password: root
 
-### `npm start`
 
 
 Runs the app in the development mode.\
