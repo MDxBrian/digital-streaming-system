@@ -2,14 +2,12 @@
 ![image](https://user-images.githubusercontent.com/56390226/200587349-8ba666ee-ef25-4a39-9517-48a40d44f7ae.png)
 
 
+# DIGITAL STREAMING SYSTEM 
 
-DIGITAL STREAMING SYSTEM 
-You are required to write a software solution for a Digital Streaming System which allows  administrators to manage the movie catalogue information about the movies,  actors, movie reviews (like Netflix or Amazon Prime) and users management, While normal user can access movies, actors and able to give movie reviews, This application stores details of movies, actors, movie reviews and users in Mongodb nosql database. The application frontend has to be implemented using HTML, SCSS, Javascript, React Typescript, Redux while backend using Loopback and Mongodb nosql Database, for code quality and security it uses Sonarqube, and for unit testing it uses Jest along with React Testing Library.
+You are required to write a software solution for a Digital Streaming System which allows  administrators to manage the movie catalogue information about the movies,  actors, movie reviews (like Netflix or Amazon Prime) and users management, While normal user can access movies, actors and able to give movie reviews, This application stores details of movies, actors, movie reviews and users in Mongodb nosql database.
 
+# REQUIREMENTS 
 This software needs to address the following requirements:
- 
-Business Requirements: 
-The project is for administrators/users who use the system to perform the following operations. 
 
 The admin module should allow administrators perform: 
 A. Login and authentication, Use Encrypted Password
@@ -144,9 +142,9 @@ One movies can have multiple actors
 admin cannot add, edit and delete reviews
 
 
-# Getting Started with Create React App
+# Getting Started Client
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This project was designed by AntD.
 
 ## Available Scripts
 
@@ -155,15 +153,40 @@ In the project directory, you can run:
 ### `npm start`
 
 Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Open [http://localhost:3001](http://localhost:3001) to view it in the browser.
 
 The page will reload if you make edits.\
 You will also see any lint errors in the console.
 
-### `npm test`
+### `npm test` or `npm run coverage`
 
 Launches the test runner in the interactive watch mode.\
 See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+
+
+
+# Getting Started Service
+
+This project was NO SQL `loopback 4`.
+
+## Available Scripts
+
+In the project directory, you can run:
+### `cd server & cd digital-streaming-streaming service.`
+
+FYI: If you are first timer we have an admin default credentials to see the features.
+email: admin@root.com
+password: root
+
+### `npm start`
+
+
+Runs the app in the development mode.\
+Open [http://localhost:3001](http://localhost:3001) to view it in the browser.
+
+The page will reload if you make edits.\
+You will also see any lint errors in the console.
+
 
 ### `npm run build`
 
