@@ -30,6 +30,10 @@ Digital Streaming System is a system which allows the admministrator to manage t
 * Need to login first, before adding reviews/comments. 
 
 
+# Model Schema
+![POC-SCHEMA](https://user-images.githubusercontent.com/56390226/202005017-0d3ddb24-56e9-4173-89f6-bf4aa6387cda.png)
+
+
 
 # Getting Started Client
 FRONTEND & BACKEND
