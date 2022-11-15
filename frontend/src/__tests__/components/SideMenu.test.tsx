@@ -1,20 +1,17 @@
-/* eslint-disable testing-library/no-render-in-setup */
+/* eslint-disable */
+import React from "react";
 import userEvent from "@testing-library/user-event";
-import { waitFor, cleanup, screen } from "@testing-library/react";
-
-import Headers from "../../components/Layout/Header/Header";
+import { cleanup, screen } from "@testing-library/react";
 import { renderWithProviders } from "../../utils/test-utils";
 import { BrowserRouter, Router } from "react-router-dom";
 import SideMenu from "../../components/Layout/SideMenu/SideMenu";
-import App from "../../App";
 import { createMemoryHistory } from "history";
-
 
 describe("<SideMenu />", () => {
   const renderApp = () => {
     return renderWithProviders(
       <BrowserRouter>
-        <SideMenu/>
+        <SideMenu />
       </BrowserRouter>
     );
   };
@@ -42,7 +39,9 @@ describe("<SideMenu />", () => {
 
   test("should render manage movies sidemenu", () => {
     renderApp();
-    expect(screen.getByRole("img", { name: "video-camera" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("img", { name: "video-camera" })
+    ).toBeInTheDocument();
   });
 
   test("should render sub-menu", () => {
@@ -69,12 +68,13 @@ describe("<SideMenu />", () => {
         <SideMenu />
       </Router>
     );
-    const seeAllElement = screen.getByRole("menuitem", { name: "video-camera MOVIES" });
+    const seeAllElement = screen.getByRole("menuitem", {
+      name: "video-camera MOVIES",
+    });
     userEvent.click(seeAllElement);
     expect(history.location.pathname).toEqual("/manage/movies");
   });
 
-  
   test("should route review page '/manage/movies/review' when click manage-> 'REVIEWS'", () => {
     const history = createMemoryHistory();
     renderWithProviders(
@@ -82,7 +82,9 @@ describe("<SideMenu />", () => {
         <SideMenu />
       </Router>
     );
-    const seeAllElement = screen.getByRole("menuitem", { name: "star REVIEWS" });
+    const seeAllElement = screen.getByRole("menuitem", {
+      name: "star REVIEWS",
+    });
     userEvent.click(seeAllElement);
     expect(history.location.pathname).toEqual("/manage/movies/review");
   });
@@ -106,9 +108,10 @@ describe("<SideMenu />", () => {
         <SideMenu />
       </Router>
     );
-    const seeAllElement = screen.getByRole("menuitem", { name: "setting USERS" });
+    const seeAllElement = screen.getByRole("menuitem", {
+      name: "setting USERS",
+    });
     userEvent.click(seeAllElement);
     expect(history.location.pathname).toEqual("/manage/users");
   });
-
 });

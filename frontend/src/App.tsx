@@ -18,7 +18,7 @@ import MoviesEdit from "./pages/admin/movies/moviesEdit";
 import ActorDetails from "./pages/admin/actors/actorDetails";
 import Users from "./pages/admin/users/users";
 import UsersEdit from "./pages/admin/users/usersEdit";
-import Headers from "./components/Layout/Header/Header";
+import Headers from "./components/Layout/Header/Headers";
 
 const apiUsers = require("./utils/api/users");
 

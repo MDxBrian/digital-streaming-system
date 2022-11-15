@@ -1,6 +1,6 @@
-projectKey=digital-streaming-system-service
+projectKey=POC-SERVER
 serverUrl=http://localhost:9000
 serverVersion=8.9.10.61524
-dashboardUrl=http://localhost:9000/dashboard?id=digital-streaming-system-service
-ceTaskId=AYR08HPXITmaycjUlCHO
-ceTaskUrl=http://localhost:9000/api/ce/task?id=AYR08HPXITmaycjUlCHO
+dashboardUrl=http://localhost:9000/dashboard?id=POC-SERVER
+ceTaskId=AYR8QWa_ITmaycjUlCJC
+ceTaskUrl=http://localhost:9000/api/ce/task?id=AYR8QWa_ITmaycjUlCJC

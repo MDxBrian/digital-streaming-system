@@ -1,4 +1,5 @@
-/* eslint-disable testing-library/no-render-in-setup */
+/* eslint-disable */
+import React from "react";
 import userEvent from "@testing-library/user-event";
 import { cleanup, screen } from "@testing-library/react";
 import App from "../App";

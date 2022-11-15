@@ -39,7 +39,7 @@ function Login({ open, setOpen }: IModalProps) {
       footer={[
         <div key={1} style={{ textAlign: "center" }}>
           Have no account yet?
-          <Link onClick={() => setOpen(false)} to={"/register"}>
+          <Link to={"/register"}>
             &nbsp; Register
           </Link>
         </div>,

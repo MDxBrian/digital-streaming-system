@@ -1,11 +1,11 @@
 import { ActorsActionTypes } from "../constants/actions";
-import { Actors } from "../constants/actionTypes";
-const initialState: Actors[] = [];
+import { IActors } from "../constants/actionTypes";
+const initialState: IActors[] = [];
 
 const actorsReducer = (
   state = initialState,
   action: ActorsActionTypes
-): Actors[] => {
+): IActors[] => {
   switch (action.type) {
     case "CREATE_ACTORS":
       return [...state, action.actors];

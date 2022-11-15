@@ -1,8 +1,8 @@
-/* eslint-disable testing-library/no-render-in-setup */
+/* eslint-disable*/
+import React from "react";
 import userEvent from "@testing-library/user-event";
 import { cleanup, screen } from "@testing-library/react";
-
-import Headers from "../../components/Layout/Header/Header";
+import Headers from "../../components/Layout/Header/Headers";
 import { renderWithProviders } from "../../utils/test-utils";
 import { BrowserRouter, Router } from "react-router-dom";
 import { createMemoryHistory } from "history";
@@ -85,6 +85,30 @@ describe("<Header />", () => {
     const signin = screen.getByRole("dialog", { name: "LOGIN" });
     userEvent.click(signin);
     expect(signin).toBeInTheDocument();
+  });
+
+  test("should render field when pop-up login dialog when click 'SIGN-IN' button.", () => {
+    const history = createMemoryHistory();
+    renderWithProviders(
+      <Router location={history.location} navigator={history}>
+        <Headers
+          name={""}
+          setName={""}
+          open={true}
+          setOpen={false}
+          isVisibleAvatar={false}
+          setIsVisibileAvatar={false}
+          isVisibleSiginInButton={false}
+          setIsVisibleSiginInButton={true}
+        />
+      </Router>
+    );
+    const signin = screen.getByRole("dialog", { name: "LOGIN" });
+    userEvent.click(signin);
+    expect(screen.getByRole("textbox", { name: "Email" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Register" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "LOGIN" })).toBeInTheDocument();
+    expect(screen.getAllByText("Password")).toBeTruthy();
   });
 
   test("should render avatar ICON.", () => {

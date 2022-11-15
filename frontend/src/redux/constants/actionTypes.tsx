@@ -1,4 +1,4 @@
-export interface Movies {
+export interface IMovies {
     id?: string,
     title: string,
     imageUrl: string,
@@ -10,7 +10,7 @@ export interface Movies {
     actorsId?: string[]
 }
 
-export interface Actors {
+export interface IActors {
     id: string,
     imageUrl: string,
     firstName: string,

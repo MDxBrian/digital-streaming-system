@@ -16,7 +16,6 @@ import {
 import { FileAddOutlined } from "@ant-design/icons";
 import { useLocation, useNavigate } from "react-router-dom";
 import Login from "../../login/login";
-import _ from "lodash";
 
 interface IActors {
   id: string;
@@ -49,6 +48,7 @@ interface IMovies {
   description: string;
   ratingAvg: any;
   actorsId: string[];
+  userID: string;
 }
 
 const apiActors = require("../../../utils/api/actors");
@@ -63,7 +63,7 @@ const { TextArea } = Input;
 const MovieDetails = (props: any) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
 
   const [visibleReviewerDetails, setVibileReviewerDetails] = useState(false);
 
@@ -81,15 +81,15 @@ const MovieDetails = (props: any) => {
   }, []);
 
   const fetchActors = async () => {
-    setLoading(true)
+    setLoading(true);
     let newObj: IActors[] = [];
     apiMovies.getMovieDetails(location.state.id).then((data: IMovies) => {
-      return data.actorsId.map(async (data: any) => {
+      return data.actorsId.forEach(async (data: any) => {
         await apiActors.getActorDetails(data).then((item: IActors) => {
           newObj.push(item);
           setActorList([...newObj]);
         });
-        setLoading(false)
+        setLoading(false);
       });
     });
   };
@@ -113,7 +113,7 @@ const MovieDetails = (props: any) => {
   };
 
   const fetchReviewers = async () => {
-    setLoading(true)
+    setLoading(true);
     const token = sessionStorage.getItem("token");
     let userId = "";
     if (token) {
@@ -123,7 +123,7 @@ const MovieDetails = (props: any) => {
     const reviewersList: IReviewer[] = res;
     let newObj: any[] = [];
     let newObjAll: any[] = [];
-    reviewersList.map(async (data: any) => {
+    reviewersList.forEach(async (data: any) => {
       if (data.userId === userId && data.movieId === location.state.id) {
         newObj.push(data);
         setMyReviews(newObj);
@@ -144,7 +144,7 @@ const MovieDetails = (props: any) => {
         setRatingPercentage(avgRating);
       }
     });
-    setLoading(false)
+    setLoading(false);
   };
 
   const dataAllReviewers = getAllReviewDetails.map((val: IReviewer) => ({
@@ -161,7 +161,7 @@ const MovieDetails = (props: any) => {
   const [openLoginModal, setOpenLoginModal] = useState(false);
 
   const handleSubmit = async (data: { rate: string; content: string }) => {
-    setLoading(true)
+    setLoading(true);
     const payload = {
       rate: data.rate,
       content: data.content,
@@ -176,8 +176,9 @@ const MovieDetails = (props: any) => {
     let res = await apiReviewers.addReviewers(payload);
     if (res) {
       window.location.reload();
-    } 
-    setLoading(false)
+    }
+    setLoading(false);
+    fetchReviewers();
   };
 
   const onClickReviewButton = () => {
@@ -425,7 +426,7 @@ const MovieDetails = (props: any) => {
                               rows={4}
                               style={{
                                 borderColor: "black",
-                                width:"100%",
+                                width: "100%",
                               }}
                             />
                           </Form.Item>

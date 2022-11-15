@@ -1,4 +1,4 @@
-import { Movies, Actors } from "./actionTypes";
+import { IMovies, IActors } from "./actionTypes";
 
 // MOVIES
 export const CREATE_MOVIE = "CREATE_MOVIES";
@@ -7,12 +7,12 @@ export const REMOVE_MOVIE = "REMOVE_MOVIES";
 
 export interface SetMovieAction {
   type: typeof SET_MOVIE;
-  movies: Movies[];
+  movies: IMovies[];
 }
 
 export interface CreateMovieAction {
   type: typeof CREATE_MOVIE;
-  movies: Movies;
+  movies: IMovies;
 }
 
 export interface RemoveMovieAction {
@@ -32,12 +32,12 @@ export const REMOVE_ACTORS = "REMOVE_ACTORS";
 
 export interface SetActorAction {
   type: typeof SET_ACTORS;
-  actors: Actors[];
+  actors: IActors[];
 }
 
 export interface CreateActorAction {
   type: typeof CREATE_ACTORS;
-  actors: Actors;
+  actors: IActors;
 }
 
 export interface RemoveActorAction {
