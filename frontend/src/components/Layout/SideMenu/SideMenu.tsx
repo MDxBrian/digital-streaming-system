@@ -27,10 +27,10 @@ const SideMenu = () => {
         navigate(`${data.path}`);
       }
       if (SideMenuData[index].children) {
-        SideMenuData[index].children?.forEach((data: any) => {
-          if (e.key === data.key) {
-            setKey(data.key);
-            navigate(`${data.path}`);
+        SideMenuData[index].children?.forEach((items: any) => {
+          if (e.key === items.key) {
+            setKey(items.key);
+            navigate(`${items.path}`);
           }
         });
       }
@@ -43,9 +43,9 @@ const SideMenu = () => {
       items.push(data);
       if (!data.path) {
         if (data.children) {
-          data.children.forEach((data: any) => {
-            if (window.location.pathname === data.path) {
-              setKey(data.key);
+          data.children.forEach((items: any) => {
+            if (window.location.pathname === items.path) {
+              setKey(items.key);
             }
           });
         }

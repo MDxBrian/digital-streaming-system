@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { HomeOutlined, DownOutlined, LogoutOutlined } from "@ant-design/icons";
 import { Layout, Col, Row, Button, Dropdown, Avatar, Space, Menu } from "antd";
 import Login from "../../../pages/login/login";
-import styles from "./Header.module.scss";
+import styles from "./Headers.module.scss";
 const { Header } = Layout;
 
 const menu: JSX.Element = (

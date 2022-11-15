@@ -42,7 +42,7 @@ const getActorList = async () => {
 getActorList();
 
 const tagRender = (props: CustomTagProps) => {
-  const { label, value, closable, onClose } = props;
+  const { label, closable, onClose } = props;
   const onPreventMouseDown = (event: React.MouseEvent<HTMLSpanElement>) => {
     event.preventDefault();
     event.stopPropagation();
@@ -59,11 +59,10 @@ const tagRender = (props: CustomTagProps) => {
   );
 };
 
-const MoviesAdd = () => {
+const MoviesEdit = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [data, setData]: any[] = useState([]);
   const [value, setValue]: any = useState([]);
 
   const onSubmit = async (values: any) => {
@@ -71,7 +70,7 @@ const MoviesAdd = () => {
       id: location.state.id,
       title: values.title,
       imageUrl: values.imageUrl,
-      budgetCost: values.cost,
+      budgetCost: values.budgetCost,
       yearOfRelease: values.yearRelease,
       runningTime: values.runningTime,
       director: values.director,
@@ -197,7 +196,7 @@ const MoviesAdd = () => {
             <Form.Item
               initialValue={location.state.budgetCost}
               label="Budget Cost"
-              name="cost"
+              name="budgetCost"
               hasFeedback
               rules={[
                 {
@@ -296,4 +295,4 @@ const MoviesAdd = () => {
     </Card>
   );
 };
-export default MoviesAdd;
+export default MoviesEdit;

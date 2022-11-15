@@ -1,14 +1,14 @@
 import { Dispatch } from "redux";
 import { AppActions } from "../constants/actions";
-import { Movies } from "../constants/actionTypes";
+import { IMovies } from "../constants/actionTypes";
 const apiMovies = require("../../utils/api/movies");
 
-export const setMovies = (movies: Movies[]): AppActions => ({
+export const setMovies = (movies: IMovies[]): AppActions => ({
   type: "SET_MOVIES",
   movies,
 });
 
-export const createMovies = (movies: Movies): AppActions => ({
+export const createMovies = (movies: IMovies): AppActions => ({
   type: "CREATE_MOVIES",
   movies,
 });

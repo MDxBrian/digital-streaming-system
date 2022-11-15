@@ -1,11 +1,11 @@
 import { MovieActionTypes } from "../constants/actions";
-import { Movies } from "../constants/actionTypes";
-const initialState: Movies[] = [];
+import { IMovies } from "../constants/actionTypes";
+const initialState: IMovies[] = [];
 
 const moviesReducer = (
   state = initialState,
   action: MovieActionTypes
-): Movies[] => {
+): IMovies[] => {
   switch (action.type) {
     case "CREATE_MOVIES":
       return [...state, action.movies];
