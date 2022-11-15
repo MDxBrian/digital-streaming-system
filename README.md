@@ -33,7 +33,8 @@ Digital Streaming System is a system which allows the admministrator to manage t
 # Model Schema
 ![POC-SCHEMA](https://user-images.githubusercontent.com/56390226/202005017-0d3ddb24-56e9-4173-89f6-bf4aa6387cda.png)
 
-
+# Public users simple processs
+![Process of Public Users](https://user-images.githubusercontent.com/56390226/202009916-6039aa88-24ea-4f8e-99e9-a0b69d4066a8.png)
 
 # Getting Started Client
 FRONTEND & BACKEND
