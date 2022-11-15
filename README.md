@@ -26,7 +26,7 @@ Digital Streaming System is a system which allows the admministrator to manage t
 
 # Limitation 
 * Admin - cannot add reviews and comment. (cannot delete root admin)
-* Normal USer - cannot manage all functionality of an admin the movies and actors. 
+* Normal User - cannot manage all functionality of an admin the movies and actors. 
 * Need to login first, before adding reviews/comments. 
 
 
